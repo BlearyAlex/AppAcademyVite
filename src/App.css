@@ -1,0 +1,10 @@
+.submenu {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+.submenu.open {
+  max-height: 100px; /* O un valor suficiente para mostrar todo el contenido */
+  opacity: 1;
+}
