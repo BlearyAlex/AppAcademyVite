@@ -7,8 +7,9 @@ import * as yup from "yup";
 import Breadcrumbs from "../components/Breadcrumbs ";
 
 import useStoreProduct from "../store/useStoreProducts";
+import { useParams } from "react-router-dom";
 
-// Define el esquema de validación con Yup
+
 const schema = yup.object().shape({
     nombre: yup.string().required("El nombre es obligatorio."),
     codigoBarras: yup.string().required("El código de barras es obligatorio."),
@@ -35,14 +36,18 @@ const schema = yup.object().shape({
         .positive("El stock es obligatorio y debe ser mayor a 0."),
 });
 
-export default function CreateProducto() {
+export default function EditProducto() {
 
-    const crearProducto = useStoreProduct((state) => state.createProducto);
+    const { productId } = useParams();
 
-    const { register, handleSubmit, formState: { errors }, reset, watch } = useForm({
+    const updateProducto = useStoreProduct((state) => state.updateProducto);
+    const producto = useStoreProduct((state) => state.producto);
+    const fetchProductById = useStoreProduct((state) => state.fetchProductById);
+    const loading = useStoreProduct((state) => state.loading);
+
+    const { register, handleSubmit, formState: { errors }, reset, setValue, watch } = useForm({
         resolver: yupResolver(schema),
-
-    });
+    })
 
 
     const costo = watch("costo");
@@ -56,24 +61,35 @@ export default function CreateProducto() {
     }, [costo, utilidad]);
 
 
+    useEffect(() => {
+        console.log("fetchProductById:", fetchProductById); // Esto debería mostrar la función en la consola si está bien definida
+        if (fetchProductById) {
+            fetchProductById(productId);
+        }
+    }, [productId, fetchProductById]);
+
+    useEffect(() => {
+        if (producto) {
+            // Seteamos los valores del formulario cuando el producto esté disponible
+            reset(producto);
+        }
+    }, [producto, reset]);
+
+    if (loading) return <p>Cargando...</p>;
+
+    if (!producto) return <p>Producto no encontrado</p>;
+
+
     const onSubmit = async (data) => {
-        console.log("Valores del formulario enviados:", data);
-        const nuevoProducto = {
-            ...data,
-            costo: parseFloat(data.costo),
-            utilidad: parseFloat(data.utilidad),
-            precio: precio,
-
-
-        };
-
         try {
-            await crearProducto(nuevoProducto);
-            reset();
+            await updateProducto({ ...data, id: productId });
+            alert("Producto actualizado correctamente");
         } catch (error) {
-            alert(`Error al crear el producto. Inténtalo de nuevo. ${error}`);
+            alert(`Error al actualizar el producto: ${error.message}`);
         }
     };
+
+
 
     return (
         <div className="p-6 bg-gray-50 rounded-lg shadow-md">
@@ -81,33 +97,19 @@ export default function CreateProducto() {
                 <Breadcrumbs
                     items={[
                         { label: 'Productos', link: '/productos' },
-                        { label: 'Crear Producto', link: '/productos/createproducto' }
+                        { label: 'Editar Producto', link: '' }
                     ]}
                 />
+
                 <div>
-                    <h2 className="font-bold text-3xl text-gray-500">Crear Producto</h2>
-                    <p className="text-gray-600">Complete el formulario para agregar un nuevo producto.</p>
+                    <h2 className="font-bold text-3xl text-gray-500">Editar Producto</h2>
+                    <p className="text-gray-600">Complete el formulario para editar un producto.</p>
                 </div>
 
-                {/* Form */}
-                <form className="mt-6 grid grid-cols-2 items-start gap-4" onSubmit={handleSubmit((data) => {
-                    console.log("Formulario enviado con datos:", data); // Para verificar el contenido completo antes de enviar
-                    onSubmit(data);
-                })}>
+                {/* from */}
+                <form className="mt-6 grid grid-cols-2 items-start gap-4" onSubmit={handleSubmit(onSubmit)}>
 
-                    {/* Imagen */}
-                    <div className="bg-white rounded-lg shadow p-4 flex flex-col">
-                        <h3 className="font-bold text-xl text-gray-700">Imagen</h3>
-                        <div className="mt-4">
-                            <label className="block text-gray-700 font-semibold">Imagen (URL)</label>
-                            <input
-                                type="file"
-                                className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                            />
-                        </div>
-                    </div>
-
-                    {/* Información General */}
+                    {/* Informacion General */}
                     <div className="bg-white rounded-lg shadow p-4 flex flex-col">
                         <h3 className="font-bold text-xl text-gray-700">Información General</h3>
                         <div className="grid grid-cols-2 gap-4 mt-4">
@@ -232,14 +234,14 @@ export default function CreateProducto() {
                         <div className="w-full mt-4">
                             <button
                                 type="submit"
-                                className="w-full p-2 bg-green-400 text-white rounded hover:bg-green-300 font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-400 transition duration-200"
+                                className="w-full p-2 bg-blue-400 text-white rounded hover:bg-blue-300 font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-400 transition duration-200"
                             >
-                                Crear Producto
+                                Editar Producto
                             </button>
                         </div>
                     </div>
                 </form>
             </div>
         </div>
-    );
+    )
 }
