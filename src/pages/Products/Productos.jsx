@@ -1,5 +1,5 @@
-import Table from "../components/Table";
-import useStoreProduct from "../store/useStoreProducts";
+import Table from "../../components/Table";
+import useStoreProduct from "../../store/useStoreProducts";
 import {
     Pencil,
     Eraser,
@@ -7,7 +7,7 @@ import {
     CirclePlus
 } from "lucide-react"
 
-import Breadcrumbs from "../components/Breadcrumbs ";
+import Breadcrumbs from "../../components/Breadcrumbs ";
 
 import { useNavigate } from "react-router-dom";
 

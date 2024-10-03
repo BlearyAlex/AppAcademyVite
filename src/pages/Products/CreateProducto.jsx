@@ -4,9 +4,9 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
-import Breadcrumbs from "../components/Breadcrumbs ";
+import Breadcrumbs from "../../components/Breadcrumbs ";
 
-import useStoreProduct from "../store/useStoreProducts";
+import useStoreProduct from "../../store/useStoreProducts";
 
 // Define el esquema de validación con Yup
 const schema = yup.object().shape({

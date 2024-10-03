@@ -2,7 +2,9 @@
 
 import SideBar from "../components/SideBar";
 import { SidebarItem } from "../components/SideBar";
-import { Boxes, LayoutDashboard, Receipt, UserCircle, ShoppingCart } from "lucide-react";
+
+import { Boxes, LayoutDashboard, LayoutGrid, Package, ShoppingCart, Bookmark } from "lucide-react";
+
 import { Link, useLocation } from "react-router-dom";
 
 export default function Layout({ children }) {
@@ -19,10 +21,20 @@ export default function Layout({ children }) {
                     <SidebarItem icon={<ShoppingCart size={20} />} text="Productos" active={location.pathname === '/productos'} />
                 </Link>
 
-                <SidebarItem icon={<UserCircle size={20} />} text="Users" />
-                <SidebarItem icon={<Boxes size={20} />} text="Inventario" alert />
+                <Link to="/marcas">
+                    <SidebarItem icon={<Bookmark size={20} />} text="Marcas" active={location.pathname === '/marcas'} />
+                </Link>
+
+                <Link to="/proveedores">
+                    <SidebarItem icon={<Package size={20} />} text="Proveedores" active={location.pathname === '/proveedores'} />
+                </Link>
+
+                <Link to="/categorias">
+                    <SidebarItem icon={<LayoutGrid size={20} />} text="Categorias" active={location.pathname === '/categorias'} />
+                </Link>
+
                 <hr className="my-3" />
-                <SidebarItem icon={<Receipt size={20} />} text="Pagos" />
+                <SidebarItem icon={<Boxes size={20} />} text="Inventario" alert />
             </SideBar>
 
             <section className="flex-grow">
