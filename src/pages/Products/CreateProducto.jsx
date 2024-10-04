@@ -7,6 +7,9 @@ import * as yup from "yup";
 import Breadcrumbs from "../../components/Breadcrumbs ";
 
 import useStoreProduct from "../../store/useStoreProducts";
+import useStoreBrand from "../../store/useStoreBrands";
+import useStoreCategory from "../../store/useStoreCategories";
+import useStoreProvider from "../../store/useStoreProviders";
 
 // Define el esquema de validación con Yup
 const schema = yup.object().shape({
@@ -33,18 +36,28 @@ const schema = yup.object().shape({
         .transform((value, originalValue) => originalValue === '' ? 0 : value)
         .required("El stock mínimo es obligatorio.")
         .positive("El stock es obligatorio y debe ser mayor a 0."),
+    marcaId: yup.string().nullable(),
+    categoriaId: yup.string().nullable(),
+    proveedorId: yup.string().nullable(),
 });
 
 export default function CreateProducto() {
 
+    //! Stores
     const crearProducto = useStoreProduct((state) => state.createProducto);
+    const { brands, fetchBrands } = useStoreBrand()
+    const { categories, fetchCategories } = useStoreCategory()
+    const { providers, fetchProviders } = useStoreProvider()
+    console.log(providers)
 
+    //! React-hook-form
     const { register, handleSubmit, formState: { errors }, reset, watch } = useForm({
         resolver: yupResolver(schema),
 
     });
 
 
+    //! Calcular precio automaticamente
     const costo = watch("costo");
     const utilidad = watch("utilidad");
 
@@ -55,6 +68,21 @@ export default function CreateProducto() {
         setPrecio(calculado);
     }, [costo, utilidad]);
 
+    //! UseEffectBrands
+    useEffect(() => {
+        fetchBrands();
+    }, [fetchBrands]);
+
+    //! UseEffectsCategories
+    useEffect(() => {
+        fetchCategories();
+    }, [fetchCategories])
+
+    //! UseEffectProviders
+    useEffect(() => {
+        fetchProviders();
+    }, [fetchProviders])
+
 
     const onSubmit = async (data) => {
         console.log("Valores del formulario enviados:", data);
@@ -63,7 +91,9 @@ export default function CreateProducto() {
             costo: parseFloat(data.costo),
             utilidad: parseFloat(data.utilidad),
             precio: precio,
-
+            marcaId: data.marcaId || null,
+            categoriaId: data.categoriaId || null,
+            proveedorId: data.proveedorId || null,
 
         };
 
@@ -77,7 +107,7 @@ export default function CreateProducto() {
 
     return (
         <div className="p-6 bg-gray-50 rounded-lg shadow-md">
-            <div className="mt-6 h-[600px] overflow-y-auto">
+            <div className="mt-6 h-full overflow-y-auto">
                 <Breadcrumbs
                     items={[
                         { label: 'Productos', link: '/productos' },
@@ -96,21 +126,24 @@ export default function CreateProducto() {
                 })}>
 
                     {/* Imagen */}
-                    <div className="bg-white rounded-lg shadow p-4 flex flex-col">
-                        <h3 className="font-bold text-xl text-gray-700">Imagen</h3>
-                        <div className="mt-4">
-                            <label className="block text-gray-700 font-semibold">Imagen (URL)</label>
+                    <div className="bg-white rounded-lg shadow-lg p-6 flex flex-col">
+                        <h3 className="font-bold text-2xl text-gray-800 mb-4">Imagen</h3>
+                        <div className="mt-2">
+                            <label className="block text-gray-700 font-semibold mb-2">Imagen (URL)</label>
                             <input
                                 type="file"
-                                className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                                className="block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-200 ease-in-out hover:shadow-lg"
                             />
+                            <p className="text-gray-500 mt-1">Selecciona una imagen para cargar. Formatos permitidos: JPG, PNG, GIF.</p>
                         </div>
                     </div>
 
+
                     {/* Información General */}
-                    <div className="bg-white rounded-lg shadow p-4 flex flex-col">
+                    <div className="bg-white rounded-lg shadow p-4 flex flex-col items-center">
                         <h3 className="font-bold text-xl text-gray-700">Información General</h3>
-                        <div className="grid grid-cols-2 gap-4 mt-4">
+                        <div className="grid grid-cols-3 gap-4 mt-4">
+
                             <div>
                                 <label className="block text-gray-700 font-semibold">Nombre</label>
                                 <input
@@ -120,7 +153,9 @@ export default function CreateProducto() {
                                 />
                                 {errors.nombre && <p className="text-red-500">{errors.nombre.message}</p>}
                             </div>
-                            <div>
+
+
+                            <div style={{ gridColumn: "span 2" }}>
                                 <label className="block text-gray-700 font-semibold">Código de Barras</label>
                                 <input
                                     className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
@@ -128,7 +163,8 @@ export default function CreateProducto() {
                                 />
                                 {errors.codigoBarras && <p className="text-red-500">{errors.codigoBarras.message}</p>}
                             </div>
-                            <div className="col-span-2">
+
+                            <div className="col-span-3">
                                 <label className="block text-gray-700 font-semibold">Descripción</label>
                                 <textarea
                                     className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
@@ -136,6 +172,51 @@ export default function CreateProducto() {
                                     {...register("descripcion")}
                                 />
                                 {errors.descripcion && <p className="text-red-500">{errors.descripcion.message}</p>}
+                            </div>
+
+                            <div className="">
+                                <label className="block text-gray-700 font-semibold">Marca</label>
+                                <select
+                                    className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                                    {...register("marcaId")}
+                                >
+                                    <option value=''>Seleccione una Marca</option>
+                                    {brands.map((marca) => (
+                                        <option key={marca.marcaId} value={marca.marcaId}>
+                                            {marca.nombre}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div>
+                                <label className="block text-gray-700 font-semibold">Categoria</label>
+                                <select
+                                    className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                                    {...register("categoriaId")}
+                                >
+                                    <option value=''>Seleccione una Categoria</option>
+                                    {categories.map((categoria) => (
+                                        <option key={categoria.categoriaId} value={categoria.categoriaId}>
+                                            {categoria.nombre}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div>
+                                <label className="block text-gray-700 font-semibold">Proveedor</label>
+                                <select
+                                    className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                                    {...register("proveedorId")}
+                                >
+                                    <option value=''>Seleccione un Proveedor</option>
+                                    {providers.map((provider) => (
+                                        <option key={provider.proveedorId} value={provider.proveedorId}>
+                                            {provider.nombre}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
                         </div>
                     </div>

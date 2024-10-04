@@ -34,6 +34,7 @@ export default function Layout({ children }) {
                 </Link>
 
                 <hr className="my-3" />
+
                 <SidebarItem icon={<Boxes size={20} />} text="Inventario" alert />
             </SideBar>
 
