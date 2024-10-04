@@ -6,9 +6,12 @@ import * as yup from "yup";
 
 import Breadcrumbs from "../../components/Breadcrumbs ";
 
-import useStoreProduct from "../../store/useStoreProducts";
 import { useParams } from "react-router-dom";
 
+import useStoreProduct from "../../store/useStoreProducts";
+import useStoreBrand from "../../store/useStoreBrands";
+import useStoreCategory from "../../store/useStoreCategories";
+import useStoreProvider from "../../store/useStoreProviders";
 
 const schema = yup.object().shape({
     nombre: yup.string().required("El nombre es obligatorio."),
@@ -34,6 +37,9 @@ const schema = yup.object().shape({
         .transform((value, originalValue) => originalValue === '' ? 0 : value)
         .required("El stock mínimo es obligatorio.")
         .positive("El stock es obligatorio y debe ser mayor a 0."),
+    marcaId: yup.string().nullable(),
+    categoriaId: yup.string().nullable(),
+    proveedorId: yup.string().nullable(),
 });
 
 export default function EditProducto() {
@@ -45,11 +51,16 @@ export default function EditProducto() {
     const fetchProductById = useStoreProduct((state) => state.fetchProductById);
     const loading = useStoreProduct((state) => state.loading);
 
+    const { brands, fetchBrands } = useStoreBrand()
+    const { categories, fetchCategories } = useStoreCategory()
+    const { providers, fetchProviders } = useStoreProvider()
+
+    //! React-hook-form
     const { register, handleSubmit, formState: { errors }, reset, setValue, watch } = useForm({
         resolver: yupResolver(schema),
     })
 
-
+    //! Calcular precio automaticamente
     const costo = watch("costo");
     const utilidad = watch("utilidad");
 
@@ -61,9 +72,25 @@ export default function EditProducto() {
     }, [costo, utilidad]);
 
 
+    //! UseEffectBrands
     useEffect(() => {
-        console.log("fetchProductById:", fetchProductById); // Esto debería mostrar la función en la consola si está bien definida
+        fetchBrands();
+    }, [fetchBrands]);
+
+    //! UseEffectsCategories
+    useEffect(() => {
+        fetchCategories();
+    }, [fetchCategories])
+
+    //! UseEffectProviders
+    useEffect(() => {
+        fetchProviders();
+    }, [fetchProviders])
+
+
+    useEffect(() => {
         if (fetchProductById) {
+            console.log("Fetching product with ID:", productId);
             fetchProductById(productId);
         }
     }, [productId, fetchProductById]);
@@ -82,7 +109,8 @@ export default function EditProducto() {
 
     const onSubmit = async (data) => {
         try {
-            await updateProducto({ ...data, id: productId });
+            console.log("Datos enviados al actualizar producto:", { ...data, productoId: productId });
+            await updateProducto({ ...data, productoid: productId });
             alert("Producto actualizado correctamente");
         } catch (error) {
             alert(`Error al actualizar el producto: ${error.message}`);
@@ -110,9 +138,10 @@ export default function EditProducto() {
                 <form className="mt-6 grid grid-cols-2 items-start gap-4" onSubmit={handleSubmit(onSubmit)}>
 
                     {/* Informacion General */}
-                    <div className="bg-white rounded-lg shadow p-4 flex flex-col">
+                    <div className="bg-white rounded-lg shadow p-4 flex flex-col items-center">
                         <h3 className="font-bold text-xl text-gray-700">Información General</h3>
-                        <div className="grid grid-cols-2 gap-4 mt-4">
+                        <div className="grid grid-cols-3 gap-4 mt-4">
+
                             <div>
                                 <label className="block text-gray-700 font-semibold">Nombre</label>
                                 <input
@@ -122,7 +151,8 @@ export default function EditProducto() {
                                 />
                                 {errors.nombre && <p className="text-red-500">{errors.nombre.message}</p>}
                             </div>
-                            <div>
+
+                            <div style={{ gridColumn: "span 2" }}>
                                 <label className="block text-gray-700 font-semibold">Código de Barras</label>
                                 <input
                                     className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
@@ -130,7 +160,8 @@ export default function EditProducto() {
                                 />
                                 {errors.codigoBarras && <p className="text-red-500">{errors.codigoBarras.message}</p>}
                             </div>
-                            <div className="col-span-2">
+
+                            <div className="col-span-3">
                                 <label className="block text-gray-700 font-semibold">Descripción</label>
                                 <textarea
                                     className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
@@ -139,6 +170,52 @@ export default function EditProducto() {
                                 />
                                 {errors.descripcion && <p className="text-red-500">{errors.descripcion.message}</p>}
                             </div>
+
+                            <div className="">
+                                <label className="block text-gray-700 font-semibold">Marca</label>
+                                <select
+                                    className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                                    {...register("marcaId")}
+                                >
+                                    <option value=''>Seleccione una Marca</option>
+                                    {brands.map((marca) => (
+                                        <option key={marca.marcaId} value={marca.marcaId}>
+                                            {marca.nombre}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div>
+                                <label className="block text-gray-700 font-semibold">Categoria</label>
+                                <select
+                                    className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                                    {...register("categoriaId")}
+                                >
+                                    <option value=''>Seleccione una Categoria</option>
+                                    {categories.map((categoria) => (
+                                        <option key={categoria.categoriaId} value={categoria.categoriaId}>
+                                            {categoria.nombre}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div>
+                                <label className="block text-gray-700 font-semibold">Proveedor</label>
+                                <select
+                                    className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                                    {...register("proveedorId")}
+                                >
+                                    <option value=''>Seleccione un Proveedor</option>
+                                    {providers.map((provider) => (
+                                        <option key={provider.proveedorId} value={provider.proveedorId}>
+                                            {provider.nombre}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
                         </div>
                     </div>
 

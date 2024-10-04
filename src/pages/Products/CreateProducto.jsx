@@ -48,7 +48,6 @@ export default function CreateProducto() {
     const { brands, fetchBrands } = useStoreBrand()
     const { categories, fetchCategories } = useStoreCategory()
     const { providers, fetchProviders } = useStoreProvider()
-    console.log(providers)
 
     //! React-hook-form
     const { register, handleSubmit, formState: { errors }, reset, watch } = useForm({
@@ -154,7 +153,6 @@ export default function CreateProducto() {
                                 {errors.nombre && <p className="text-red-500">{errors.nombre.message}</p>}
                             </div>
 
-
                             <div style={{ gridColumn: "span 2" }}>
                                 <label className="block text-gray-700 font-semibold">Código de Barras</label>
                                 <input
@@ -174,7 +172,7 @@ export default function CreateProducto() {
                                 {errors.descripcion && <p className="text-red-500">{errors.descripcion.message}</p>}
                             </div>
 
-                            <div className="">
+                            <div>
                                 <label className="block text-gray-700 font-semibold">Marca</label>
                                 <select
                                     className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
@@ -218,6 +216,7 @@ export default function CreateProducto() {
                                     ))}
                                 </select>
                             </div>
+
                         </div>
                     </div>
 
