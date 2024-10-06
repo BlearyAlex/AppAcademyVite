@@ -6,13 +6,15 @@ import * as yup from "yup";
 
 import toast from 'react-hot-toast';
 
+import { CircleArrowLeft } from 'lucide-react'
+
 import Breadcrumbs from "../../components/Breadcrumbs ";
 
 import useStoreProduct from "../../store/useStoreProducts";
 import useStoreBrand from "../../store/useStoreBrands";
 import useStoreCategory from "../../store/useStoreCategories";
 import useStoreProvider from "../../store/useStoreProviders";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import useToastStore from "../../store/toastStore";
 
 // Define el esquema de validación con Yup
@@ -54,6 +56,7 @@ export default function CreateProducto() {
     const { brands, fetchBrands } = useStoreBrand()
     const { categories, fetchCategories } = useStoreCategory()
     const { providers, fetchProviders } = useStoreProvider()
+    const { fetchProducts } = useStoreProduct()
     const showToast = useToastStore((state) => state.showToast);
 
     //! React-hook-form
@@ -110,7 +113,7 @@ export default function CreateProducto() {
             {
                 loading: 'Creando producto...',
                 success: () => {
-
+                    fetchProducts()
                     // Aquí usamos el store de Zustand para mostrar el toast
                     showToast('Producto creado con éxito!', 'success');
                     navigate('/productos'); // Redirige a la lista de productos
@@ -127,7 +130,12 @@ export default function CreateProducto() {
 
     return (
         <div className="p-6 bg-gray-50 rounded-lg shadow-md">
-            <div className="mt-6 h-full overflow-y-auto">
+            <div className="inline-block">
+                <Link to="/productos">
+                    <CircleArrowLeft size={30} />
+                </Link>
+            </div>
+            <div className="mt-6 h-[600px] overflow-y-auto">
                 <Breadcrumbs
                     items={[
                         { label: 'Productos', link: '/productos' },

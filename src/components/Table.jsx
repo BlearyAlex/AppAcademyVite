@@ -20,7 +20,7 @@ import {
 import toast from "react-hot-toast";
 
 
-export default function Table({ products, columns, fetchProducts, loading, error, actionButton }) {
+export default function Table({ products, columns, loading, error, actionButton }) {
 
     const [sorting, setSorting] = useState([]);
     const [filtered, setFiltered] = useState("");
@@ -39,10 +39,6 @@ export default function Table({ products, columns, fetchProducts, loading, error
         onGlobalFilterChange: setFiltered,
         getFilteredRowModel: getFilteredRowModel()
     });
-
-    useEffect(() => {
-        fetchProducts();
-    }, [fetchProducts]);
 
     useEffect(() => {
         if (error) {

@@ -8,6 +8,7 @@ import Brands from "./pages/Brands/Brands"
 import Proveedors from "./pages/Proveedors/Proveedors"
 import Categories from "./pages/Categories/Categories"
 import { Toaster } from "react-hot-toast"
+import ViewProducto from "./pages/Products/ViewProducto"
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
           <Route path="/productos" element={<Productos />} />
           <Route path="/productos/createproducto" element={<CreateProducto />} />
           <Route path="/productos/edit/:productId" element={<EditProducto />} />
+          <Route path="/productos/view/:productId" element={<ViewProducto />} />
 
           <Route path="/marcas" element={<Brands />} />
 
@@ -26,11 +28,11 @@ export default function App() {
           <Route path="/categorias" element={<Categories />} />
 
         </Routes>
-      </Layout>
+      </Layout >
       <Toaster
         position="top-right"
         reverseOrder={false}
       />
-    </BrowserRouter>
+    </BrowserRouter >
   )
 }
