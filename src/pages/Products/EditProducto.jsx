@@ -6,12 +6,14 @@ import * as yup from "yup";
 
 import Breadcrumbs from "../../components/Breadcrumbs ";
 
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import useStoreProduct from "../../store/useStoreProducts";
 import useStoreBrand from "../../store/useStoreBrands";
 import useStoreCategory from "../../store/useStoreCategories";
 import useStoreProvider from "../../store/useStoreProviders";
+
+import toast, { Toaster } from 'react-hot-toast';
 
 const schema = yup.object().shape({
     nombre: yup.string().required("El nombre es obligatorio."),
@@ -45,6 +47,8 @@ const schema = yup.object().shape({
 export default function EditProducto() {
 
     const { productId } = useParams();
+
+    const navigate = useNavigate()
 
     const updateProducto = useStoreProduct((state) => state.updateProducto);
     const producto = useStoreProduct((state) => state.producto);
@@ -108,19 +112,36 @@ export default function EditProducto() {
 
 
     const onSubmit = async (data) => {
-        try {
-            console.log("Datos enviados al actualizar producto:", { ...data, productoId: productId });
-            await updateProducto({ ...data, productoid: productId });
-            alert("Producto actualizado correctamente");
-        } catch (error) {
-            alert(`Error al actualizar el producto: ${error.message}`);
-        }
+        const myPromise = updateProducto({ ...data, productId: productId })
+
+        toast.promise(myPromise, {
+            loading: 'Actualizando..',
+            success: <b>Producto actualizado con exito!</b>,
+            error: <b>No se pudo actualizar el producto.</b>,
+            style: {
+                minWidth: '250px',
+            },
+            autoClose: 5000,
+        })
+            .then(async () => {
+                await fetchProductById()
+                setTimeout(() => {
+                    navigate('/productos');
+                }, 3000);
+            })
+            .catch((error) => {
+                console.log(error)
+            })
     };
 
 
 
     return (
         <div className="p-6 bg-gray-50 rounded-lg shadow-md">
+            <Toaster
+                position="top-right"
+                reverseOrder={false}
+            />
             <div className="mt-6 h-[600px] overflow-y-auto">
                 <Breadcrumbs
                     items={[

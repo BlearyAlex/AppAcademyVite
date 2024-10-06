@@ -4,12 +4,16 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
+import toast from 'react-hot-toast';
+
 import Breadcrumbs from "../../components/Breadcrumbs ";
 
 import useStoreProduct from "../../store/useStoreProducts";
 import useStoreBrand from "../../store/useStoreBrands";
 import useStoreCategory from "../../store/useStoreCategories";
 import useStoreProvider from "../../store/useStoreProviders";
+import { useNavigate } from "react-router-dom";
+import useToastStore from "../../store/toastStore";
 
 // Define el esquema de validación con Yup
 const schema = yup.object().shape({
@@ -43,14 +47,17 @@ const schema = yup.object().shape({
 
 export default function CreateProducto() {
 
+    const navigate = useNavigate()
+
     //! Stores
     const crearProducto = useStoreProduct((state) => state.createProducto);
     const { brands, fetchBrands } = useStoreBrand()
     const { categories, fetchCategories } = useStoreCategory()
     const { providers, fetchProviders } = useStoreProvider()
+    const showToast = useToastStore((state) => state.showToast);
 
     //! React-hook-form
-    const { register, handleSubmit, formState: { errors }, reset, watch } = useForm({
+    const { register, handleSubmit, formState: { errors }, watch } = useForm({
         resolver: yupResolver(schema),
 
     });
@@ -83,6 +90,7 @@ export default function CreateProducto() {
     }, [fetchProviders])
 
 
+
     const onSubmit = async (data) => {
         console.log("Valores del formulario enviados:", data);
         const nuevoProducto = {
@@ -96,12 +104,25 @@ export default function CreateProducto() {
 
         };
 
-        try {
-            await crearProducto(nuevoProducto);
-            reset();
-        } catch (error) {
-            alert(`Error al crear el producto. Inténtalo de nuevo. ${error}`);
-        }
+        // Usa toast.promise para manejar el proceso de creación
+        toast.promise(
+            crearProducto(nuevoProducto),
+            {
+                loading: 'Creando producto...',
+                success: () => {
+
+                    // Aquí usamos el store de Zustand para mostrar el toast
+                    showToast('Producto creado con éxito!', 'success');
+                    navigate('/productos'); // Redirige a la lista de productos
+                    return 'Producto creado con éxito!'; // Mensaje de éxito
+                },
+                error: () => {
+                    // También usamos el store de Zustand aquí
+                    showToast('No se pudo crear el producto.', 'error');
+                    return 'No se pudo crear el producto.'; // Mensaje de error
+                },
+            }
+        );
     };
 
     return (

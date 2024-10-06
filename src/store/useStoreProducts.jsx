@@ -69,10 +69,12 @@ const useStoreProduct = create((set) => ({
         set({ loading: true, error: null });
         try {
             const response = await axios.get(`http://localhost:8080/api/v1/Producto/GetProductoById/${productId}`)
-            set({ producto: response.data, loading: false });
+            set({ producto: response.data });
             console.log(response)
         } catch (error) {
             set({ error: error.message, loading: false });
+        } finally {
+            set({ loading: false })
         }
     }
 }));

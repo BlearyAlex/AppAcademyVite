@@ -7,6 +7,7 @@ import EditProducto from "./pages/Products/EditProducto"
 import Brands from "./pages/Brands/Brands"
 import Proveedors from "./pages/Proveedors/Proveedors"
 import Categories from "./pages/Categories/Categories"
+import { Toaster } from "react-hot-toast"
 
 export default function App() {
   return (
@@ -26,6 +27,10 @@ export default function App() {
 
         </Routes>
       </Layout>
+      <Toaster
+        position="top-right"
+        reverseOrder={false}
+      />
     </BrowserRouter>
   )
 }

@@ -1,3 +1,5 @@
+/* eslint-disable react/prop-types */
+
 import {
     useReactTable,
     getCoreRowModel,
@@ -15,6 +17,7 @@ import {
     ChevronRight,
     ChevronLeft,
 } from "lucide-react";
+import toast from "react-hot-toast";
 
 
 export default function Table({ products, columns, fetchProducts, loading, error, actionButton }) {
@@ -41,8 +44,13 @@ export default function Table({ products, columns, fetchProducts, loading, error
         fetchProducts();
     }, [fetchProducts]);
 
+    useEffect(() => {
+        if (error) {
+            toast.error(`Error: ${error}`);
+        }
+    }, [error]); // Solo se ejecuta cuando 'error' cambia
+
     if (loading) return <p>Cargando...</p>;
-    if (error) return <p>Error: {error}</p>;
 
     return (
         <div className="p-4 bg-gray-50 rounded-lg shadow-md">
