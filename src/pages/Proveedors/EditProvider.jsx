@@ -11,7 +11,7 @@ import { CircleArrowLeft } from 'lucide-react'
 import Breadcrumbs from "../../components/Breadcrumbs ";
 
 
-import useStoreBrand from "../../store/useStoreBrands";
+import useStoreProvider from "../../store/useStoreProviders";
 import { useNavigate, Link, useParams } from "react-router-dom";
 import useToastStore from "../../store/toastStore";
 
@@ -20,18 +20,18 @@ const schema = yup.object().shape({
     nombre: yup.string().required("El nombre es obligatorio."),
 });
 
-export default function EditMarca() {
+export default function EditProvider() {
 
-    const { marcaId } = useParams()
-    console.log("marcaId desde params:", marcaId);
+    const { proveedorId } = useParams()
+    console.log("marcaId desde params:", proveedorId);
 
     const navigate = useNavigate()
 
     //! Stores
-    const updateBrand = useStoreBrand((state) => state.updateBrand);
-    const brand = useStoreBrand((state) => state.brand)
-    const fetchBrandById = useStoreBrand((state) => state.fetchBrandById)
-    const loading = useStoreBrand((state) => state.loading)
+    const updateProvider = useStoreProvider((state) => state.updateProvider);
+    const provider = useStoreProvider((state) => state.provider)
+    const fetchProviderById = useStoreProvider((state) => state.fetchProviderById)
+    const loading = useStoreProvider((state) => state.loading)
     const showToast = useToastStore((state) => state.showToast);
 
     //! React-hook-form
@@ -41,45 +41,47 @@ export default function EditMarca() {
     });
 
     useEffect(() => {
-        if (fetchBrandById) {
-            console.log("Fetching product with ID:", marcaId);
-            fetchBrandById(marcaId);
+        if (fetchProviderById) {
+            console.log("Fetching product with ID:", proveedorId);
+            fetchProviderById(proveedorId);
         }
-    }, [marcaId, fetchBrandById]);
+    }, [proveedorId, fetchProviderById]);
 
     useEffect(() => {
-        if (brand) {
-            console.log('Datos de la marca recibidos:', brand);
-            reset(brand);
+        if (provider) {
+            console.log('Datos de la marca recibidos:', provider);
+            reset(provider);
         }
-    }, [brand, reset]);
+    }, [provider, reset]);
+
 
     if (loading) return <p>Cargando...</p>;
 
-    if (!brand) return <p>Marca no encontrado</p>;
+    if (!provider) return <p>Proveedor no encontrado</p>;
+
 
     const onSubmit = async (data) => {
         console.log("Valores del formulario enviados:", data);
-        const nuevaMarca = {
+        const nuevoProveedor = {
             ...data,
-            marcaId: marcaId
+            proveedorId: proveedorId
         };
 
         // Usa toast.promise para manejar el proceso de creación
         toast.promise(
-            updateBrand(nuevaMarca),
+            updateProvider(nuevoProveedor),
             {
-                loading: 'Creando Marca...',
+                loading: 'Editando Proveedor...',
                 success: () => {
 
-                    showToast('Marca editado con éxito!', 'success');
-                    navigate('/marcas');
-                    return 'Marca editado con éxito!';
+                    showToast('Proveedor editado con éxito!', 'success');
+                    navigate('/proveedores');
+                    return 'Proveedor editado con éxito!';
                 },
                 error: () => {
                     // También usamos el store de Zustand aquí
-                    showToast('No se pudo editar la marca.', 'error');
-                    return 'No se pudo editar la marca.'; // Mensaje de error
+                    showToast('No se pudo editar el proveedor.', 'error');
+                    return 'No se pudo editar el proveedor.'; // Mensaje de error
                 },
             }
         );
@@ -88,20 +90,20 @@ export default function EditMarca() {
     return (
         <div className="p-6 bg-gray-50 rounded-lg shadow-md">
             <div className="inline-block">
-                <Link to="/marcas">
+                <Link to="/proveedores">
                     <CircleArrowLeft size={30} />
                 </Link>
             </div>
             <div className="mt-6 h-[600px] overflow-y-auto">
                 <Breadcrumbs
                     items={[
-                        { label: 'Marcas', link: '/marcas' },
-                        { label: 'Editar Marca', link: '' }
+                        { label: 'Proveedor', link: '/proveedores' },
+                        { label: 'Editar Proveedor', link: '' }
                     ]}
                 />
                 <div>
-                    <h2 className="font-bold text-3xl text-gray-500">Editar Marca</h2>
-                    <p className="text-gray-600">Complete el formulario para editar una marca.</p>
+                    <h2 className="font-bold text-3xl text-gray-500">Editar Proveedor</h2>
+                    <p className="text-gray-600">Complete el formulario para editar el proveedor.</p>
                 </div>
 
                 {/* Form */}
@@ -129,12 +131,12 @@ export default function EditMarca() {
                                 type="submit"
                                 className="w-full p-2 bg-green-400 text-white rounded hover:bg-green-300 font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-400 transition duration-200"
                             >
-                                Crear Marca
+                                Editar Proveedor
                             </button>
                         </div>
                     </div>
                 </form>
             </div>
         </div>
-    );
+    )
 }

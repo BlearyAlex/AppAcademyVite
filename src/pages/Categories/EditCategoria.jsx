@@ -10,8 +10,7 @@ import { CircleArrowLeft } from 'lucide-react'
 
 import Breadcrumbs from "../../components/Breadcrumbs ";
 
-
-import useStoreBrand from "../../store/useStoreBrands";
+import useStoreCategory from "../../store/useStoreCategories";
 import { useNavigate, Link, useParams } from "react-router-dom";
 import useToastStore from "../../store/toastStore";
 
@@ -20,18 +19,18 @@ const schema = yup.object().shape({
     nombre: yup.string().required("El nombre es obligatorio."),
 });
 
-export default function EditMarca() {
-
-    const { marcaId } = useParams()
-    console.log("marcaId desde params:", marcaId);
+export default function EditCategoria() {
+    const { categoriaId } = useParams()
+    console.log("marcaId desde params:", categoriaId);
 
     const navigate = useNavigate()
 
     //! Stores
-    const updateBrand = useStoreBrand((state) => state.updateBrand);
-    const brand = useStoreBrand((state) => state.brand)
-    const fetchBrandById = useStoreBrand((state) => state.fetchBrandById)
-    const loading = useStoreBrand((state) => state.loading)
+    const updateCategory = useStoreCategory((state) => state.updateCategory);
+    const category = useStoreCategory((state) => state.category)
+    const fetchCategoryById = useStoreCategory((state) => state.fetchCategoryById)
+    const loading = useStoreCategory((state) => state.loading)
+
     const showToast = useToastStore((state) => state.showToast);
 
     //! React-hook-form
@@ -41,45 +40,47 @@ export default function EditMarca() {
     });
 
     useEffect(() => {
-        if (fetchBrandById) {
-            console.log("Fetching product with ID:", marcaId);
-            fetchBrandById(marcaId);
+        if (fetchCategoryById) {
+            console.log("Fetching product with ID:", categoriaId);
+            fetchCategoryById(categoriaId);
         }
-    }, [marcaId, fetchBrandById]);
+    }, [categoriaId, fetchCategoryById]);
 
     useEffect(() => {
-        if (brand) {
-            console.log('Datos de la marca recibidos:', brand);
-            reset(brand);
+        if (category) {
+            console.log('Datos de la marca recibidos:', category);
+            reset(category);
         }
-    }, [brand, reset]);
+    }, [category, reset]);
+
 
     if (loading) return <p>Cargando...</p>;
 
-    if (!brand) return <p>Marca no encontrado</p>;
+    if (!category) return <p>Proveedor no encontrado</p>;
+
 
     const onSubmit = async (data) => {
         console.log("Valores del formulario enviados:", data);
-        const nuevaMarca = {
+        const nuevaCategoria = {
             ...data,
-            marcaId: marcaId
+            categoriaId: categoriaId
         };
 
         // Usa toast.promise para manejar el proceso de creación
         toast.promise(
-            updateBrand(nuevaMarca),
+            updateCategory(nuevaCategoria),
             {
-                loading: 'Creando Marca...',
+                loading: 'Editando Proveedor...',
                 success: () => {
 
-                    showToast('Marca editado con éxito!', 'success');
-                    navigate('/marcas');
-                    return 'Marca editado con éxito!';
+                    showToast('Categoria editado con éxito!', 'success');
+                    navigate('/categorias');
+                    return 'Categoria editado con éxito!';
                 },
                 error: () => {
                     // También usamos el store de Zustand aquí
-                    showToast('No se pudo editar la marca.', 'error');
-                    return 'No se pudo editar la marca.'; // Mensaje de error
+                    showToast('No se pudo editar la categoria.', 'error');
+                    return 'No se pudo editar la categoria.'; // Mensaje de error
                 },
             }
         );
@@ -88,20 +89,20 @@ export default function EditMarca() {
     return (
         <div className="p-6 bg-gray-50 rounded-lg shadow-md">
             <div className="inline-block">
-                <Link to="/marcas">
+                <Link to="/proveedores">
                     <CircleArrowLeft size={30} />
                 </Link>
             </div>
             <div className="mt-6 h-[600px] overflow-y-auto">
                 <Breadcrumbs
                     items={[
-                        { label: 'Marcas', link: '/marcas' },
-                        { label: 'Editar Marca', link: '' }
+                        { label: 'Categoria', link: '/categorias' },
+                        { label: 'Editar Categoria', link: '' }
                     ]}
                 />
                 <div>
-                    <h2 className="font-bold text-3xl text-gray-500">Editar Marca</h2>
-                    <p className="text-gray-600">Complete el formulario para editar una marca.</p>
+                    <h2 className="font-bold text-3xl text-gray-500">Crear Categoria</h2>
+                    <p className="text-gray-600">Complete el formulario para editar la categoria.</p>
                 </div>
 
                 {/* Form */}
@@ -129,12 +130,12 @@ export default function EditMarca() {
                                 type="submit"
                                 className="w-full p-2 bg-green-400 text-white rounded hover:bg-green-300 font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-400 transition duration-200"
                             >
-                                Crear Marca
+                                Editar Categoria
                             </button>
                         </div>
                     </div>
                 </form>
             </div>
         </div>
-    );
+    )
 }

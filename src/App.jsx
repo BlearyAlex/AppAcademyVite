@@ -11,6 +11,10 @@ import { Toaster } from "react-hot-toast"
 import ViewProducto from "./pages/Products/ViewProducto"
 import EditBrand from "./pages/Brands/EditBrand"
 import CreateMarca from "./pages/Brands/CreateBrand"
+import CreateProvider from "./pages/Proveedors/CreateProvider"
+import EditProvider from "./pages/Proveedors/EditProvider"
+import CreateCategoria from "./pages/Categories/CreateCategoria"
+import EditCategoria from "./pages/Categories/EditCategoria"
 
 export default function App() {
   return (
@@ -28,8 +32,12 @@ export default function App() {
           <Route path="/marcas/edit/:marcaId" element={<EditBrand />} />
 
           <Route path="/proveedores" element={<Proveedors />} />
+          <Route path="/proveedores/createproveedor" element={<CreateProvider />} />
+          <Route path="/proveedores/edit/:proveedorId" element={<EditProvider />} />
 
           <Route path="/categorias" element={<Categories />} />
+          <Route path="/categorias/createcategoria" element={<CreateCategoria />} />
+          <Route path="/categorias/edit/:categoriaId" element={<EditCategoria />} />
 
         </Routes>
       </Layout >

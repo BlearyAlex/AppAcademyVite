@@ -20,13 +20,13 @@ import {
 import toast from "react-hot-toast";
 
 
-export default function Table({ products, columns, loading, error, actionButton, titles }) {
+export default function Table({ data, columns, loading, error, actionButton, titles }) {
 
     const [sorting, setSorting] = useState([]);
     const [filtered, setFiltered] = useState("");
 
     const table = useReactTable({
-        data: products,
+        data: data,
         columns: columns,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),

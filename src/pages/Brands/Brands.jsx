@@ -6,7 +6,7 @@ import useStoreBrand from "../../store/useStoreBrands"
 
 import {
     Pencil,
-    Eraser,
+    Trash,
     CirclePlus
 } from "lucide-react"
 
@@ -67,8 +67,8 @@ export default function Brands() {
             accessorKey: "acciones",
             cell: ({ row }) => (
                 <div className="flex items-center space-x-2">
-                    <button onClick={() => handleEdit(row.original)} className="px-2 py-1 text-white bg-indigo-400 rounded hover:bg-indigo-300"><Pencil size={20} strokeWidth={2.5} /></button>
-                    <button onClick={() => handleDelete(row.original.marcaId)} className="px-2 py-1 text-white bg-red-400 rounded hover:bg-red-300"><Eraser size={20} strokeWidth={2.5} /></button>
+                    <button onClick={() => handleEdit(row.original)} data-tooltip-id="editTooltip" data-tooltip-content="Editar" className="px-2 py-1 text-indigo-500"><Pencil size={20} strokeWidth={2.5} /></button>
+                    <button onClick={() => handleDelete(row.original.marcaId)} data-tooltip-id="deleteTooltip" data-tooltip-content="Eliminar" className="px-2 py-1 text-red-500"><Trash size={20} strokeWidth={2.5} /></button>
                 </div>
             )
         }
@@ -83,7 +83,7 @@ export default function Brands() {
                 ]}
             />
             <Table
-                products={brands}
+                data={brands}
                 columns={columns}
                 fetchProducts={fetchBrands}
                 loading={loading}

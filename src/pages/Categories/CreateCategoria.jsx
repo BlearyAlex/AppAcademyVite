@@ -2,17 +2,16 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
-import { useEffect } from "react";
-
 import toast from 'react-hot-toast';
 
 import { CircleArrowLeft } from 'lucide-react'
 
 import Breadcrumbs from "../../components/Breadcrumbs ";
 
+import useStoreCategory from "../../store/useStoreCategories";
 
-import useStoreBrand from "../../store/useStoreBrands";
-import { useNavigate, Link, useParams } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+
 import useToastStore from "../../store/toastStore";
 
 // Define el esquema de validación con Yup
@@ -20,66 +19,41 @@ const schema = yup.object().shape({
     nombre: yup.string().required("El nombre es obligatorio."),
 });
 
-export default function EditMarca() {
 
-    const { marcaId } = useParams()
-    console.log("marcaId desde params:", marcaId);
+export default function CreateCategoria() {
 
     const navigate = useNavigate()
 
     //! Stores
-    const updateBrand = useStoreBrand((state) => state.updateBrand);
-    const brand = useStoreBrand((state) => state.brand)
-    const fetchBrandById = useStoreBrand((state) => state.fetchBrandById)
-    const loading = useStoreBrand((state) => state.loading)
+    const crearProveedor = useStoreCategory((state) => state.createCategory);
+    const { fetchCategories } = useStoreCategory()
     const showToast = useToastStore((state) => state.showToast);
 
     //! React-hook-form
-    const { register, handleSubmit, formState: { errors }, reset } = useForm({
+    const { register, handleSubmit, formState: { errors } } = useForm({
         resolver: yupResolver(schema),
 
     });
 
-    useEffect(() => {
-        if (fetchBrandById) {
-            console.log("Fetching product with ID:", marcaId);
-            fetchBrandById(marcaId);
-        }
-    }, [marcaId, fetchBrandById]);
-
-    useEffect(() => {
-        if (brand) {
-            console.log('Datos de la marca recibidos:', brand);
-            reset(brand);
-        }
-    }, [brand, reset]);
-
-    if (loading) return <p>Cargando...</p>;
-
-    if (!brand) return <p>Marca no encontrado</p>;
-
     const onSubmit = async (data) => {
         console.log("Valores del formulario enviados:", data);
-        const nuevaMarca = {
+        const nuevaCategoria = {
             ...data,
-            marcaId: marcaId
         };
 
-        // Usa toast.promise para manejar el proceso de creación
         toast.promise(
-            updateBrand(nuevaMarca),
+            crearProveedor(nuevaCategoria),
             {
-                loading: 'Creando Marca...',
+                loading: 'Creando Categoria...',
                 success: () => {
-
-                    showToast('Marca editado con éxito!', 'success');
-                    navigate('/marcas');
-                    return 'Marca editado con éxito!';
+                    fetchCategories()
+                    showToast('Categoria creado con éxito!', 'success');
+                    navigate('/categorias');
+                    return 'Categoria creado con éxito!';
                 },
                 error: () => {
-                    // También usamos el store de Zustand aquí
-                    showToast('No se pudo editar la marca.', 'error');
-                    return 'No se pudo editar la marca.'; // Mensaje de error
+                    showToast('No se pudo crear la categoria.', 'error');
+                    return 'No se pudo crear la categoria.';
                 },
             }
         );
@@ -88,20 +62,20 @@ export default function EditMarca() {
     return (
         <div className="p-6 bg-gray-50 rounded-lg shadow-md">
             <div className="inline-block">
-                <Link to="/marcas">
+                <Link to="/categorias">
                     <CircleArrowLeft size={30} />
                 </Link>
             </div>
             <div className="mt-6 h-[600px] overflow-y-auto">
                 <Breadcrumbs
                     items={[
-                        { label: 'Marcas', link: '/marcas' },
-                        { label: 'Editar Marca', link: '' }
+                        { label: 'Categorias', link: '/categorias' },
+                        { label: 'Crear Categoria', link: '/categorias/createcategoria' }
                     ]}
                 />
                 <div>
-                    <h2 className="font-bold text-3xl text-gray-500">Editar Marca</h2>
-                    <p className="text-gray-600">Complete el formulario para editar una marca.</p>
+                    <h2 className="font-bold text-3xl text-gray-500">Crear Categoria</h2>
+                    <p className="text-gray-600">Complete el formulario para agregar una nueva categoria.</p>
                 </div>
 
                 {/* Form */}
@@ -129,12 +103,12 @@ export default function EditMarca() {
                                 type="submit"
                                 className="w-full p-2 bg-green-400 text-white rounded hover:bg-green-300 font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-400 transition duration-200"
                             >
-                                Crear Marca
+                                Crear Categoria
                             </button>
                         </div>
                     </div>
                 </form>
             </div>
         </div>
-    );
+    )
 }
