@@ -40,7 +40,7 @@ const useStoreProduct = create((set) => ({
 
     // Eliminar producto
     deleteProduct: async (productId) => {
-        set({ loading: true, error: null });
+        set({ loading: true, fetchError: null });
         try {
             await axios.delete(`http://localhost:8080/api/v1/Producto/DeleteProduct/${productId}`);
             set((state) => ({

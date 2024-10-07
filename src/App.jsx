@@ -9,6 +9,8 @@ import Proveedors from "./pages/Proveedors/Proveedors"
 import Categories from "./pages/Categories/Categories"
 import { Toaster } from "react-hot-toast"
 import ViewProducto from "./pages/Products/ViewProducto"
+import EditBrand from "./pages/Brands/EditBrand"
+import CreateMarca from "./pages/Brands/CreateBrand"
 
 export default function App() {
   return (
@@ -22,6 +24,8 @@ export default function App() {
           <Route path="/productos/view/:productId" element={<ViewProducto />} />
 
           <Route path="/marcas" element={<Brands />} />
+          <Route path="/marcas/createmarca" element={<CreateMarca />} />
+          <Route path="/marcas/edit/:marcaId" element={<EditBrand />} />
 
           <Route path="/proveedores" element={<Proveedors />} />
 

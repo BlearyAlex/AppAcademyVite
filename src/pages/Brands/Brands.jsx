@@ -1,3 +1,5 @@
+import { useEffect } from "react"
+
 import Table from "../../components/Table"
 
 import useStoreBrand from "../../store/useStoreBrands"
@@ -11,15 +13,54 @@ import {
 import Breadcrumbs from "../../components/Breadcrumbs "
 
 import { useNavigate } from "react-router-dom"
+import useToastStore from "../../store/toastStore"
+
+import toast from "react-hot-toast"
 
 export default function Brands() {
 
     const navigate = useNavigate()
 
-    const { brands, fetchBrands, loading, error } = useStoreBrand()
+    const { brands, fetchBrands, loading, error, deleteBrand } = useStoreBrand()
+    const { showToast } = useToastStore()
 
+    //! EditProduct
+    const handleEdit = (marca) => {
+        console.log("marcas a editar:", marca)
+
+        navigate(`/marcas/edit/${marca.marcaId}`)
+    }
+
+    //! DeleteProduct
+    const handleDelete = async (marcaId) => {
+        toast.promise(
+            deleteBrand(marcaId),
+            {
+                loading: 'Eliminando marca...',
+                success: () => {
+                    // Aquí usamos el store de Zustand para mostrar el toast
+                    showToast('Marca eliminado con éxito!', 'success');
+                    navigate('/marcas'); // Redirige a la lista de productos
+                    fetchBrands()
+                    return 'Marca eliminado con éxito!'; // Mensaje de éxito
+                },
+                error: () => {
+                    // También usamos el store de Zustand aquí
+                    showToast('No se pudo eliminar la marca.', 'error');
+                    return 'No se pudo eliminar la marca.'; // Mensaje de error
+                },
+
+            }
+        );
+    }
+
+    //! FetchProducts
+    useEffect(() => {
+        fetchBrands();
+    }, [fetchBrands]);
 
     const columns = [
+        { header: "ID", accessorKey: "marcaId" },
         { header: "Nombre de Categoria", accessorKey: "nombre" },
         {
             header: "Acciones",
@@ -27,7 +68,7 @@ export default function Brands() {
             cell: ({ row }) => (
                 <div className="flex items-center space-x-2">
                     <button onClick={() => handleEdit(row.original)} className="px-2 py-1 text-white bg-indigo-400 rounded hover:bg-indigo-300"><Pencil size={20} strokeWidth={2.5} /></button>
-                    <button onClick={() => handleDelete(row.original.id)} className="px-2 py-1 text-white bg-red-400 rounded hover:bg-red-300"><Eraser size={20} strokeWidth={2.5} /></button>
+                    <button onClick={() => handleDelete(row.original.marcaId)} className="px-2 py-1 text-white bg-red-400 rounded hover:bg-red-300"><Eraser size={20} strokeWidth={2.5} /></button>
                 </div>
             )
         }
@@ -51,6 +92,10 @@ export default function Brands() {
                     label: "Crear Marca",
                     icon: <CirclePlus size={20} strokeWidth={2.25} />,
                     link: "/marcas/createmarca",
+                }}
+                titles={{
+                    title: "Marcas",
+                    subtitle: "Lista de todos las marcas."
                 }}
             />
         </div>

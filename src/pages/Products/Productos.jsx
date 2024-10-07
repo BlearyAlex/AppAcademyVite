@@ -124,6 +124,10 @@ export default function Productos() {
                     icon: <CirclePlus size={20} strokeWidth={2.25} />,
                     link: "/productos/createproducto",
                 }}
+                titles={{
+                    title: "Productos",
+                    subtitle: "Lista de todos los productos."
+                }}
             />
         </div>
     )

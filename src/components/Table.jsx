@@ -20,7 +20,7 @@ import {
 import toast from "react-hot-toast";
 
 
-export default function Table({ products, columns, loading, error, actionButton }) {
+export default function Table({ products, columns, loading, error, actionButton, titles }) {
 
     const [sorting, setSorting] = useState([]);
     const [filtered, setFiltered] = useState("");
@@ -53,8 +53,8 @@ export default function Table({ products, columns, loading, error, actionButton 
             {/* Button */}
             <div className="flex justify-between items-center mb-4">
                 <div>
-                    <h2 className="font-bold text-3xl text-gray-500">Productos</h2>
-                    <p>Lista de todos los productos</p>
+                    <h2 className="font-bold text-3xl text-gray-500">{titles.title}</h2>
+                    <p>{titles.subtitle}</p>
                 </div>
                 <div className="flex gap-4">
                     <input
