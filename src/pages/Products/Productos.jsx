@@ -25,7 +25,7 @@ export default function Productos() {
     const navigate = useNavigate()
 
     const [open, setOpen] = useState(false);
-    const [selectedProductId, setSelectedProductId] = useState(null); // Estado para el ID del producto seleccionado
+    const [selectedProductId, setSelectedProductId] = useState(null);
 
     //! EditProduct
     const handleEdit = (product) => {
@@ -158,7 +158,6 @@ export default function Productos() {
                         >
                             Delete
                         </button>
-
                         <button
                             className="w-full p-2 bg-emerald-100/60 text-emerald-500 rounded hover:bg-emerald-200 font-semibold transition duration-200"
                             onClick={() => setOpen(false)}

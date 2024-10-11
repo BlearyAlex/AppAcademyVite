@@ -44,8 +44,10 @@ const useStoreCategory = create((set) => ({
                 categories: state.productos.filter((category) => category.id !== categoriaId)
             }));
         } catch (error) {
-            console.error("Error eliminando la categoria:", error);
-            set({ fetchError: error.message });
+
+            const errorMessage = error.response?.data?.message || 'No se pudo eliminar la categoria.';
+            set({ deleteError: error.message });
+            throw new Error(errorMessage);
         } finally {
             set({ loading: false });
         }

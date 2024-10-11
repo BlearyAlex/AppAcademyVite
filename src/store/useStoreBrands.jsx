@@ -45,8 +45,9 @@ const useStoreBrand = create((set) => ({
                 productos: state.productos.filter((brand) => brand.id !== brandId)
             }));
         } catch (error) {
-            console.error("Error eliminando la marca:", error);
+            const errorMessage = error.response?.data?.message || 'No se pudo eliminar la marca.';
             set({ deleteError: error.message });
+            throw new Error(errorMessage);
         } finally {
             set({ loading: false });
         }

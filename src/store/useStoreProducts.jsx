@@ -47,8 +47,10 @@ const useStoreProduct = create((set) => ({
                 productos: state.productos.filter((producto) => producto.id !== productId)
             }));
         } catch (error) {
-            console.error("Error eliminando el producto:", error);
+
+            const errorMessage = error.response?.data?.message || 'No se pudo eliminar el producto.';
             set({ deleteError: error.message });
+            throw new Error(errorMessage);
         } finally {
             set({ loading: false });
         }
