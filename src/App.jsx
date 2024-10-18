@@ -15,6 +15,9 @@ import CreateProvider from "./pages/Proveedors/CreateProvider"
 import EditProvider from "./pages/Proveedors/EditProvider"
 import CreateCategoria from "./pages/Categories/CreateCategoria"
 import EditCategoria from "./pages/Categories/EditCategoria"
+import Entradas from "./pages/EntradasProducts/Entradas"
+import CreateEntrada from "./pages/EntradasProducts/CreateEntrada"
+import EditEntrada from "./pages/EntradasProducts/EditEntrada"
 
 export default function App() {
   return (
@@ -38,6 +41,10 @@ export default function App() {
           <Route path="/categorias" element={<Categories />} />
           <Route path="/categorias/createcategoria" element={<CreateCategoria />} />
           <Route path="/categorias/edit/:categoriaId" element={<EditCategoria />} />
+
+          <Route path="/entradas" element={<Entradas />} />
+          <Route path="/entradas/createentrada" element={<CreateEntrada />} />
+          <Route path="/entradas/edit/:entradaId" element={<EditEntrada />} />
 
         </Routes>
       </Layout >

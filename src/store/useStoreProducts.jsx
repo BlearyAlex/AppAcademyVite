@@ -1,10 +1,11 @@
-// store.js
 import { create } from 'zustand';
 import axios from 'axios';
 
 const useStoreProduct = create((set) => ({
     productos: [],
     producto: null,
+    nombreProducto: '',
+    setNombreProducto: (nombre) => set({ nombreProducto: nombre }),
     loading: false,
     fetchError: null,
     deleteError: null,
@@ -79,7 +80,28 @@ const useStoreProduct = create((set) => ({
         } finally {
             set({ loading: false })
         }
-    }
+    },
+
+    // searchProductsByName: async (nombre) => {
+    //     if (!nombre) {
+
+    //         set({ productos: [], fetchError: null })
+    //         return;
+    //     }
+
+    //     set({ loading: true, fetchError: null, productos: [] });
+    //     try {
+    //         const response = await axios.get(`http://localhost:8080/api/v1/Producto/by-name?name=${nombre}`);
+    //         set({ productos: response.data, loading: false });
+    //     } catch (error) {
+    //         if (error.response && error.response.status === 404) {
+    //             set({ productos: [], fetchError: 'No existen productos que coincidan con la busqueda.' })
+    //         } else {
+    //             console.error("Error buscando productos:", error);
+    //             set({ fetchError: error.message, loading: false });
+    //         }
+    //     }
+    // }
 }));
 
 export default useStoreProduct;
