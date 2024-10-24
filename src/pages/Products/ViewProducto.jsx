@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -6,17 +6,15 @@ import * as yup from "yup";
 
 import Breadcrumbs from "../../components/Breadcrumbs ";
 
-import { useNavigate, useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
-import { CircleArrowLeft } from "lucide-react";
+import { WholeWord, LayoutGrid, Bookmark, Package } from "lucide-react";
 
 import useStoreProduct from "../../store/useStoreProducts";
 import useStoreBrand from "../../store/useStoreBrands";
 import useStoreCategory from "../../store/useStoreCategories";
 import useStoreProvider from "../../store/useStoreProviders";
-
-import toast from 'react-hot-toast';
-import useToastStore from "../../store/toastStore";
+import { formatearFechaHora } from "../../utils/formatearFechaHora";
 
 const schema = yup.object().shape({
     nombre: yup.string().required("El nombre es obligatorio."),
@@ -51,9 +49,6 @@ export default function ViewProducto() {
 
     const { productId } = useParams();
 
-    const navigate = useNavigate()
-
-    const updateProducto = useStoreProduct((state) => state.updateProducto);
     const producto = useStoreProduct((state) => state.producto);
     const fetchProductById = useStoreProduct((state) => state.fetchProductById);
     const loading = useStoreProduct((state) => state.loading);
@@ -61,23 +56,11 @@ export default function ViewProducto() {
     const { brands, fetchBrands } = useStoreBrand()
     const { categories, fetchCategories } = useStoreCategory()
     const { providers, fetchProviders } = useStoreProvider()
-    const { showToast } = useToastStore()
 
     //! React-hook-form
-    const { register, handleSubmit, formState: { errors }, reset, watch } = useForm({
+    const { reset } = useForm({
         resolver: yupResolver(schema),
     })
-
-    //! Calcular precio automaticamente
-    const costo = watch("costo");
-    const utilidad = watch("utilidad");
-
-    const [precio, setPrecio] = useState(0);
-
-    useEffect(() => {
-        const calculado = parseFloat(costo || 0) + parseFloat(utilidad || 0);
-        setPrecio(calculado);
-    }, [costo, utilidad]);
 
 
     //! UseEffectBrands
@@ -98,14 +81,12 @@ export default function ViewProducto() {
 
     useEffect(() => {
         if (fetchProductById) {
-            console.log("Fetching product with ID:", productId);
             fetchProductById(productId);
         }
     }, [productId, fetchProductById]);
 
     useEffect(() => {
         if (producto) {
-            // Seteamos los valores del formulario cuando el producto esté disponible
             reset(producto);
         }
     }, [producto, reset]);
@@ -115,47 +96,8 @@ export default function ViewProducto() {
     if (!producto) return <p>Producto no encontrado</p>;
 
 
-    const onSubmit = async (data) => {
-        const productoActualizado = {
-            ...data,
-            productId: productId,
-            costo: parseFloat(data.costo),
-            utilidad: parseFloat(data.utilidad),
-            precio: precio,
-            marcaId: data.marcaId || null,
-            categoriaId: data.categoriaId || null,
-            proveedorId: data.proveedorId || null,
-        }
-        // Usa toast.promise para manejar el proceso de creación
-        toast.promise(
-            updateProducto(productoActualizado),
-            {
-                loading: 'Editando producto...',
-                success: () => {
-
-                    // Aquí usamos el store de Zustand para mostrar el toast
-                    showToast('Producto editado con éxito!', 'success');
-                    navigate('/productos'); // Redirige a la lista de productos
-                    return 'Producto editado con éxito!'; // Mensaje de éxito
-                },
-                error: () => {
-                    // También usamos el store de Zustand aquí
-                    showToast('No se pudo editar el producto.', 'error');
-                    return 'No se pudo editar el producto.'; // Mensaje de error
-                },
-            }
-        );
-    };
-
-
-
     return (
         <div className="p-6 bg-gray-50 rounded-lg shadow-md">
-            <div className="inline-block">
-                <Link to="/productos">
-                    <CircleArrowLeft size={30} />
-                </Link>
-            </div>
             <div className="mt-6 h-[600px] overflow-y-auto">
                 <Breadcrumbs
                     items={[
@@ -164,197 +106,111 @@ export default function ViewProducto() {
                     ]}
                 />
                 <div>
-                    <h2 className="font-bold text-3xl text-gray-500">Editar Producto</h2>
-                    <p className="text-gray-600">Complete el formulario para editar un producto.</p>
+                    <h2 className="font-bold text-3xl text-gray-500">Detalles de Producto</h2>
                 </div>
 
                 {/* from */}
-                <form className="mt-6 grid grid-cols-2 items-start gap-4" onSubmit={handleSubmit(onSubmit)}>
+                <div className="bg-white mt-6 grid grid-cols-2 items-start gap-4 rounded-lg shadow-md">
+                    <div className="flex p-10">
+                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                            <tbody>
 
-                    {/* Informacion General */}
-                    <div className="bg-white rounded-lg shadow p-4 flex flex-col items-center">
-                        <h3 className="font-bold text-xl text-gray-700">Información General</h3>
-                        <div className="grid grid-cols-3 gap-4 mt-4">
+                                <tr style={{ borderBottom: '1px solid #ccc', marginBottom: '10px' }}>
+                                    <th style={{ textAlign: 'center', padding: '10px' }} className="text-[#6c7592] font-bold">
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            <span style={{ marginRight: '5px' }}>
+                                                <WholeWord size={20} />
+                                            </span>
+                                            Nombre
+                                        </div>
+                                    </th>
+                                    <td style={{ textAlign: 'center', padding: '10px' }} className="text-[#6c7592]">{producto.nombre}</td>
+                                </tr>
 
-                            <div>
-                                <label className="block text-gray-700 font-semibold">Nombre</label>
-                                <input
-                                    className="block w-full p-2 border border-gray-300 rounded bg-gray-200"
-                                    type="text"
-                                    {...register("nombre")}
-                                    readOnly
-                                />
-                                {errors.nombre && <p className="text-red-500">{errors.nombre.message}</p>}
-                            </div>
+                                <tr style={{ borderBottom: '1px solid #ccc', marginBottom: '10px' }}>
+                                    <th style={{ textAlign: 'center', padding: '10px' }} className="text-[#6c7592] font-bold">
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            <span style={{ marginRight: '5px' }}>
+                                                <LayoutGrid size={20} />
+                                            </span>
+                                            Categoria
+                                        </div>
+                                    </th>
+                                    <td style={{ textAlign: 'center', padding: '10px' }} className="text-[#6c7592]">{categories.length > 0 ? (
+                                        categories.find(cat => {
+                                            return cat.categoriaId === producto.categoriaId;
+                                        })?.nombre || 'Sin categoría'
+                                    ) : (
+                                        'Cargando categorías...'
+                                    )}</td>
+                                </tr>
 
-                            <div style={{ gridColumn: "span 2" }}>
-                                <label className="block text-gray-700 font-semibold">Código de Barras</label>
-                                <input
-                                    className="block w-full p-2 border border-gray-300 rounded bg-gray-200"
-                                    {...register("codigoBarras")}
-                                    readOnly
-                                />
-                                {errors.codigoBarras && <p className="text-red-500">{errors.codigoBarras.message}</p>}
-                            </div>
+                                <tr style={{ borderBottom: '1px solid #ccc', marginBottom: '10px' }}>
+                                    <th style={{ textAlign: 'center', padding: '10px' }} className="text-[#6c7592] font-bold">
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            <span style={{ marginRight: '5px' }}>
+                                                <Bookmark size={20} />
+                                            </span>
+                                            Marca
+                                        </div>
+                                    </th>
+                                    <td style={{ textAlign: 'center', padding: '10px' }} className="text-[#6c7592]">{categories.length > 0 ? (
+                                        brands.find(marca => {
+                                            return marca.marcaId === producto.marcaId;
+                                        })?.nombre || 'Sin Marca'
+                                    ) : (
+                                        'Cargando categorías...'
+                                    )}</td>
+                                </tr>
 
-                            <div className="col-span-3">
-                                <label className="block text-gray-700 font-semibold">Descripción</label>
-                                <textarea
-                                    className="block w-full p-2 border border-gray-300 rounded bg-gray-200"
-                                    rows="3"
-                                    {...register("descripcion")}
-                                    readOnly
-                                />
-                                {errors.descripcion && <p className="text-red-500">{errors.descripcion.message}</p>}
-                            </div>
-
-                            <div className="">
-                                <label className="block text-gray-700 font-semibold">Marca</label>
-                                <select
-                                    className="block w-full p-2 border border-gray-300 rounded bg-gray-200"
-                                    {...register("marcaId")}
-                                    readOnly
-                                >
-                                    <option value=''>Seleccione una Marca</option>
-                                    {brands.map((marca) => (
-                                        <option key={marca.marcaId} value={marca.marcaId}>
-                                            {marca.nombre}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            <div>
-                                <label className="block text-gray-700 font-semibold">Categoria</label>
-                                <select
-                                    className="block w-full p-2 border border-gray-300 rounded bg-gray-200"
-                                    {...register("categoriaId")}
-                                    readOnly
-                                >
-                                    <option value=''>Seleccione una Categoria</option>
-                                    {categories.map((categoria) => (
-                                        <option key={categoria.categoriaId} value={categoria.categoriaId}>
-                                            {categoria.nombre}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            <div>
-                                <label className="block text-gray-700 font-semibold">Proveedor</label>
-                                <select
-                                    className="block w-full p-2 border border-gray-300 rounded bg-gray-200"
-                                    {...register("proveedorId")}
-                                    readOnly
-                                >
-                                    <option value=''>Seleccione un Proveedor</option>
-                                    {providers.map((provider) => (
-                                        <option key={provider.proveedorId} value={provider.proveedorId}>
-                                            {provider.nombre}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-
-                        </div>
+                                <tr style={{ borderBottom: '1px solid #ccc', marginBottom: '10px' }}>
+                                    <th style={{ textAlign: 'center', padding: '10px' }} className="text-[#6c7592] font-bold">
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            <span style={{ marginRight: '5px' }}>
+                                                <Package size={20} />
+                                            </span>
+                                            Proveedor
+                                        </div>
+                                    </th>
+                                    <td style={{ textAlign: 'center', padding: '10px' }} className="text-[#6c7592]">{categories.length > 0 ? (
+                                        providers.find(prov => {
+                                            return prov.proveedorId === producto.proveedorId;
+                                        })?.nombre || 'Sin Proveedor'
+                                    ) : (
+                                        'Cargando categorías...'
+                                    )}</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
-
-                    {/* Detalles del Producto */}
-                    <div className="bg-white rounded-lg shadow p-4 flex flex-col">
-                        <h3 className="font-bold text-xl text-gray-700">Detalles del Producto</h3>
-                        <div className="grid grid-cols-2 gap-4 mt-4">
-                            <div>
-                                <label className="block text-gray-700 font-semibold">Costo ($)</label>
-
-                                <input
-                                    type="number"
-                                    placeholder="100.00"
-                                    step="0.01"
-                                    {...register("costo")}
-                                    className="block w-full p-2 border border-gray-300 rounded bg-gray-200"
-                                    readOnly
-                                />
-                                {errors.costo && <p className="text-red-500">{errors.costo.message}</p>}
-                            </div>
-                            <div>
-                                <label className="block text-gray-700 font-semibold">Utilidad ($)</label>
-
-                                <input
-                                    type="number"
-                                    placeholder="20.00"
-                                    step="0.01"
-                                    {...register("utilidad")}
-                                    className="block w-full p-2 border border-gray-300 rounded bg-gray-200"
-                                    readOnly
-                                />
-                                {errors.utilidad && <p className="text-red-500">{errors.utilidad.message}</p>}
-                            </div>
-                            <div>
-                                <label className="block text-gray-700 font-semibold">Descuento Base</label>
-                                <input
-                                    type="number"
-                                    placeholder="5.00"
-                                    step="0.01"
-                                    className="block w-full p-2 border border-gray-300 rounded bg-gray-200"
-                                    {...register("descuentoBase")}
-                                    readOnly
-                                />
-                                {errors.descuentoBase && <p className="text-red-500">{errors.descuentoBase.message}</p>}
-                            </div>
-                            <div>
-                                <label className="block text-gray-700 font-semibold">Precio ($)</label>
-                                <input
-                                    type="number"
-                                    value={precio}
-                                    readOnly
-                                    className="block w-full p-2 border border-gray-300 rounded bg-gray-200"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-gray-700 font-semibold">Impuesto (%)</label>
-
-                                <input
-                                    type="number"
-                                    placeholder="18"
-                                    className="block w-full p-2 border border-gray-300 rounded bg-gray-200"
-                                    {...register("impuesto")}
-                                    readOnly
-                                />
-                                {errors.impuesto && <p className="text-red-500">{errors.impuesto.message}</p>}
-                            </div>
-                        </div>
+                    <div>
+                        <h1>Image</h1>
                     </div>
-
-                    {/* Disponibilidad */}
-                    <div className="bg-white rounded-lg shadow p-4 flex flex-col">
-                        <h3 className="font-bold text-xl text-gray-700">Disponibilidad</h3>
-                        <div className="grid grid-cols-2 gap-4 mt-4">
-                            <div>
-                                <label className="block text-gray-700 font-semibold">Estado del Producto</label>
-                                <select
-                                    className="block w-full p-2 border border-gray-300 rounded bg-gray-200"
-                                    {...register("estadoProducto")}
-                                    readOnly
-                                >
-                                    <option value={0}>Alta</option>
-                                    <option value={1}>Baja</option>
-                                </select>
-                                {errors.estadoProducto && <p className="text-red-500">{errors.estadoProducto.message}</p>}
-                            </div>
-                            <div>
-                                <label className="block text-gray-700 font-semibold">Stock Mínimo</label>
-                                <input
-                                    type="number"
-                                    placeholder="10"
-                                    className="block w-full p-2 border border-gray-300 rounded bg-gray-200"
-                                    {...register("stockMinimo")}
-                                    readOnly
-                                />
-                                {errors.stockMinimo && <p className="text-red-500">{errors.stockMinimo.message}</p>}
-                            </div>
-                        </div>
-                    </div>
-                </form>
+                </div>
+                <div className="flex justify-center bg-white mt-6 rounded-lg shadow-md p-10">
+                    <table className="w-full text-center items-center">
+                        <thead>
+                            <tr className="bg-gray-100 text-[#6c7592]">
+                                <th>Estado</th>
+                                <th>Stock</th>
+                                <th>Costo</th>
+                                <th>Utilidad</th>
+                                <th>Precio</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr className="text-[#6c7592]">
+                                <td className={`font-semibold py-3 ${producto.estadoProducto === 0 ? 'bg-emerald-100/60 text-emerald-500' : 'bg-red-100/60 text-red-500'}`}>
+                                    {producto.estadoProducto === 0 ? 'Alta' : 'Baja'}
+                                </td>
+                                <td>{producto.stockMinimo}</td>
+                                <td>${producto.costo}.00</td>
+                                <td>${producto.utilidad}.00</td>
+                                <td>${producto.precio}.00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     )

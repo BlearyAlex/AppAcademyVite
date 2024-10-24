@@ -31,7 +31,7 @@ const useStoreProduct = create((set) => ({
     // Actualizar producto
     updateProducto: async (producto) => {
         try {
-            const response = await axios.put('http://localhost:8080/api/v1/Producto/UpdateProduct', producto);
+            const response = await axios.put(`http://localhost:8080/api/v1/Producto/UpdateProduct`, producto);
             set({ producto: response.data, loading: false });
         } catch (error) {
             console.error("Error actualizando el producto:", error);

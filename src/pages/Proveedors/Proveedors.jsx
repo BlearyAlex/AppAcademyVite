@@ -70,7 +70,6 @@ export default function Proveedors() {
 
     //!Columns
     const columns = [
-        { header: "ID", accessorKey: "proveedorId" },
         { header: "Nombre de Proveedor", accessorKey: "nombre" },
         {
             header: "Acciones",

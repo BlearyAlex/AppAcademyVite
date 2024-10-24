@@ -320,15 +320,17 @@ export default function CreateProducto() {
                             </div>
 
                             <div>
-                                <label className="block text-gray-700 font-semibold">Impuesto (%)</label>
+                                <label className="block text-gray-700 font-semibold">Impuesto</label>
+                                <div className="relative">
+                                    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700 font-bold">%</span>
+                                    <input
+                                        type="number"
+                                        placeholder="18"
+                                        className="block w-full p-2 pl-8 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                                        {...register("impuesto")}
 
-                                <input
-                                    type="number"
-                                    placeholder="18"
-                                    className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                                    {...register("impuesto")}
-
-                                />
+                                    />
+                                </div>
                                 {errors.impuesto && <p className="text-red-500">{errors.impuesto.message}</p>}
                             </div>
                         </div>

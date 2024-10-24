@@ -74,7 +74,6 @@ export default function Productos() {
 
 
     const columns = [
-        { header: "ID", accessorKey: "productoId" },
         { header: "Imagen", accessorKey: "imagen" },
         { header: "Nombre", accessorKey: "nombre" },
         { header: "Descripción", accessorKey: "descripcion" },

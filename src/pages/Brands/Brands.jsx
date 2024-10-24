@@ -68,7 +68,6 @@ export default function Brands() {
     }, [fetchBrands]);
 
     const columns = [
-        { header: "ID", accessorKey: "marcaId" },
         { header: "Nombre de Categoria", accessorKey: "nombre" },
         {
             header: "Acciones",

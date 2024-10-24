@@ -77,12 +77,15 @@ export default function Table({ data, columns, loading, error, actionButton, tit
 
             {/* Table */}
             <div className="overflow-x-auto max-h-80">
-                <table className="min-w-full bg-white rounded-lg shadow-lg">
-                    <thead className="">
+                <table className="min-w-full bg-white rounded-lg shadow-lg text-center">
+                    <thead className="text-center">
                         {table.getHeaderGroups().map(headerGroup => (
                             <tr key={headerGroup.id}>
                                 {headerGroup.headers.map(header => (
-                                    <th key={header.id} onClick={header.column.getToggleSortingHandler()} className="p-4 text-left text-gray-700 cursor-pointer hover:bg-gray-300">
+                                    <th 
+                                    key={header.id} 
+                                    onClick={header.column.getToggleSortingHandler()} 
+                                    className="p-4 text-left text-gray-700 cursor-pointer hover:bg-gray-300">
                                         {flexRender(header.column.columnDef.header, header.getContext())}
                                         <span className="ml-2">
                                             {{ 'asc': '↑', desc: '↓' }[header.column.getIsSorted() ?? null]}
@@ -92,11 +95,11 @@ export default function Table({ data, columns, loading, error, actionButton, tit
                             </tr>
                         ))}
                     </thead>
-                    <tbody className="divide-y divide-gray-300">
+                    <tbody className="divide-y divide-gray-300 text-center">
                         {table.getRowModel().rows.map(row => (
                             <tr key={row.id} className="hover:bg-indigo-100">
                                 {row.getVisibleCells().map(cell => (
-                                    <td key={cell.id} className="p-4 text-gray-600">
+                                    <td key={cell.id} className="p-4 text-gray-600 text-left">
                                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                     </td>
                                 ))}

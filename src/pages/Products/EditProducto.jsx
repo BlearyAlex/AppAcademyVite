@@ -156,134 +156,162 @@ export default function EditProducto() {
                     <CircleArrowLeft size={30} />
                 </Link>
             </div>
-            <Toaster
-                position="top-right"
-                reverseOrder={false}
-            />
             <div className="mt-6 h-[600px] overflow-y-auto">
                 <Breadcrumbs
                     items={[
                         { label: 'Productos', link: '/productos' },
-                        { label: 'Editar Producto', link: '' }
+                        { label: 'Editar Producto', link: '/productos/editproducto' }
                     ]}
                 />
-
                 <div>
                     <h2 className="font-bold text-3xl text-gray-500">Editar Producto</h2>
-                    <p className="text-gray-600">Complete el formulario para editar un producto.</p>
                 </div>
 
-                {/* from */}
-                <form className="mt-6 grid grid-cols-2 items-start gap-4" onSubmit={handleSubmit(onSubmit)}>
+                {/* Form */}
+                <form
+                    className="mt-6 grid grid-cols-3 row items-start gap-4 bg-white rounded-lg shadow-lg p-6"
+                    onSubmit={handleSubmit((data) => {
+                        console.log("Formulario enviado con datos:", data); // Para verificar el contenido completo antes de enviar
+                        onSubmit(data);
+                    })}
+                >
 
-                    {/* Informacion General */}
-                    <div className="bg-white rounded-lg shadow p-4 flex flex-col items-center">
-                        <h3 className="font-bold text-xl text-gray-700">Información General</h3>
-                        <div className="grid grid-cols-3 gap-4 mt-4">
+                    {/* Información General */}
+                    <div className="gap-4 mt-4">
+                        <div>
+                            <label className="block text-gray-700 font-semibold">Nombre</label>
+                            <input
+                                className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                                type="text"
+                                {...register("nombre")}
+                            />
+                            {errors.nombre && <p className="text-red-500">{errors.nombre.message}</p>}
+                        </div>
 
-                            <div>
-                                <label className="block text-gray-700 font-semibold">Nombre</label>
-                                <input
-                                    className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                                    type="text"
-                                    {...register("nombre")}
-                                />
-                                {errors.nombre && <p className="text-red-500">{errors.nombre.message}</p>}
-                            </div>
+                        <div>
+                            <label className="block text-gray-700 font-semibold">Código de Barras</label>
+                            <input
+                                className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                                {...register("codigoBarras")}
+                            />
+                            {errors.codigoBarras && <p className="text-red-500">{errors.codigoBarras.message}</p>}
+                        </div>
 
-                            <div style={{ gridColumn: "span 2" }}>
-                                <label className="block text-gray-700 font-semibold">Código de Barras</label>
-                                <input
-                                    className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                                    {...register("codigoBarras")}
-                                />
-                                {errors.codigoBarras && <p className="text-red-500">{errors.codigoBarras.message}</p>}
-                            </div>
-
-                            <div className="col-span-3">
-                                <label className="block text-gray-700 font-semibold">Descripción</label>
-                                <textarea
-                                    className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                                    rows="3"
-                                    {...register("descripcion")}
-                                />
-                                {errors.descripcion && <p className="text-red-500">{errors.descripcion.message}</p>}
-                            </div>
-
-                            <div className="">
-                                <label className="block text-gray-700 font-semibold">Marca</label>
-                                <select
-                                    className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                                    {...register("marcaId")}
-                                >
-                                    <option value=''>Seleccione una Marca</option>
-                                    {brands.map((marca) => (
-                                        <option key={marca.marcaId} value={marca.marcaId}>
-                                            {marca.nombre}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            <div>
-                                <label className="block text-gray-700 font-semibold">Categoria</label>
-                                <select
-                                    className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                                    {...register("categoriaId")}
-                                >
-                                    <option value=''>Seleccione una Categoria</option>
-                                    {categories.map((categoria) => (
-                                        <option key={categoria.categoriaId} value={categoria.categoriaId}>
-                                            {categoria.nombre}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            <div>
-                                <label className="block text-gray-700 font-semibold">Proveedor</label>
-                                <select
-                                    className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                                    {...register("proveedorId")}
-                                >
-                                    <option value=''>Seleccione un Proveedor</option>
-                                    {providers.map((provider) => (
-                                        <option key={provider.proveedorId} value={provider.proveedorId}>
-                                            {provider.nombre}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-
+                        <div>
+                            <label className="block text-gray-700 font-semibold">Descripción</label>
+                            <textarea
+                                className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                                rows="4"
+                                {...register("descripcion")}
+                            />
+                            {errors.descripcion && <p className="text-red-500">{errors.descripcion.message}</p>}
                         </div>
                     </div>
 
-                    {/* Detalles del Producto */}
-                    <div className="bg-white rounded-lg shadow p-4 flex flex-col">
-                        <h3 className="font-bold text-xl text-gray-700">Detalles del Producto</h3>
-                        <div className="grid grid-cols-2 gap-4 mt-4">
-                            <div>
-                                <label className="block text-gray-700 font-semibold">Costo ($)</label>
+                    <div className=" mt-4">
+                        <label className="block text-gray-700 font-semibold">Marca</label>
+                        <select
+                            className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                            {...register("marcaId")}
+                        >
+                            <option value=''>Seleccione una Marca</option>
+                            {brands.map((marca) => (
+                                <option key={marca.marcaId} value={marca.marcaId}>
+                                    {marca.nombre}
+                                </option>
+                            ))}
+                        </select>
 
-                                <input
-                                    type="number"
-                                    placeholder="100.00"
-                                    step="0.01"
-                                    {...register("costo")}
-                                    className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                                />
+                        <label className="block text-gray-700 font-semibold">Categoria</label>
+                        <select
+                            className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                            {...register("categoriaId")}
+                        >
+                            <option value=''>Seleccione una Categoria</option>
+                            {categories.map((categoria) => (
+                                <option key={categoria.categoriaId} value={categoria.categoriaId}>
+                                    {categoria.nombre}
+                                </option>
+                            ))}
+                        </select>
+
+                        <label className="block text-gray-700 font-semibold">Proveedor</label>
+                        <select
+                            className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                            {...register("proveedorId")}
+                        >
+                            <option value=''>Seleccione un Proveedor</option>
+                            {providers.map((provider) => (
+                                <option key={provider.proveedorId} value={provider.proveedorId}>
+                                    {provider.nombre}
+                                </option>
+                            ))}
+                        </select>
+
+                        <div>
+                            <label className="block text-gray-700 font-semibold">Estado del Producto</label>
+                            <select
+                                className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                                {...register("estadoProducto")}
+                            >
+                                <option value={0}>Alta</option>
+                                <option value={1}>Baja</option>
+                            </select>
+                            {errors.estadoProducto && <p className="text-red-500">{errors.estadoProducto.message}</p>}
+                        </div>
+
+                        <div>
+                            <label className="block text-gray-700 font-semibold">Stock Mínimo</label>
+                            <input
+                                type="number"
+                                placeholder="10"
+                                className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                                {...register("stockMinimo")}
+                            />
+                            {errors.stockMinimo && <p className="text-red-500">{errors.stockMinimo.message}</p>}
+                        </div>
+                    </div>
+
+                    <div>
+                        <div className="mt-2">
+                            <label className="block text-gray-700 font-semibold mb-2">Imagen (URL)</label>
+                            <input
+                                type="file"
+                                className="block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-200 ease-in-out hover:shadow-lg"
+                            />
+                            <p className="text-gray-500 mt-1">Selecciona una imagen para cargar. Formatos permitidos: JPG, PNG, GIF.</p>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4 mt-4 col-start-3">
+                            <div>
+                                <label className="block text-gray-700 font-semibold">Costo:</label>
+
+                                <div className="relative">
+                                    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700 font-bold">$</span>
+                                    <input
+                                        type="number"
+                                        placeholder="100.00"
+                                        step="0.01"
+                                        {...register("costo")}
+                                        className="block w-full p-2 pl-8 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                                    />
+                                </div>
+
                                 {errors.costo && <p className="text-red-500">{errors.costo.message}</p>}
                             </div>
                             <div>
-                                <label className="block text-gray-700 font-semibold">Utilidad ($)</label>
+                                <label className="block text-gray-700 font-semibold">Utilidad:</label>
 
-                                <input
-                                    type="number"
-                                    placeholder="20.00"
-                                    step="0.01"
-                                    {...register("utilidad")}
-                                    className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                                />
+                                <div className="relative">
+                                    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700 font-bold">$</span>
+                                    <input
+                                        type="number"
+                                        placeholder="20.00"
+                                        step="0.01"
+                                        {...register("utilidad")}
+                                        className="block w-full p-2 pl-8 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                                    />
+                                </div>
                                 {errors.utilidad && <p className="text-red-500">{errors.utilidad.message}</p>}
                             </div>
                             <div>
@@ -297,65 +325,46 @@ export default function EditProducto() {
                                 />
                                 {errors.descuentoBase && <p className="text-red-500">{errors.descuentoBase.message}</p>}
                             </div>
+
                             <div>
-                                <label className="block text-gray-700 font-semibold">Precio ($)</label>
-                                <input
-                                    type="number"
-                                    value={precio}
-                                    readOnly
-                                    className="block w-full p-2 border border-gray-300 rounded bg-gray-200"
-                                />
+                                <label className="block text-gray-700 font-semibold">Precio:</label>
+                                <div className="relative">
+                                    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700 font-bold">$</span>
+                                    <input
+                                        type="number"
+                                        value={precio.toFixed(2)}
+                                        readOnly
+                                        className="block w-full p-2 pl-8 border border-gray-300 rounded bg-gray-200"
+                                    />
+                                </div>
                             </div>
+
                             <div>
-                                <label className="block text-gray-700 font-semibold">Impuesto (%)</label>
+                                <label className="block text-gray-700 font-semibold">Impuesto</label>
+                                <div className="relative">
+                                    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700 font-bold">%</span>
+                                    <input
+                                        type="number"
+                                        placeholder="18"
+                                        className="block w-full p-2 pl-8 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                                        {...register("impuesto")}
 
-                                <input
-                                    type="number"
-                                    placeholder="18"
-                                    className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                                    {...register("impuesto")}
-
-                                />
+                                    />
+                                </div>
                                 {errors.impuesto && <p className="text-red-500">{errors.impuesto.message}</p>}
                             </div>
                         </div>
                     </div>
 
-                    {/* Disponibilidad */}
-                    <div className="bg-white rounded-lg shadow p-4 flex flex-col">
-                        <h3 className="font-bold text-xl text-gray-700">Disponibilidad</h3>
-                        <div className="grid grid-cols-2 gap-4 mt-4">
-                            <div>
-                                <label className="block text-gray-700 font-semibold">Estado del Producto</label>
-                                <select
-                                    className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                                    {...register("estadoProducto")}
-                                >
-                                    <option value={0}>Alta</option>
-                                    <option value={1}>Baja</option>
-                                </select>
-                                {errors.estadoProducto && <p className="text-red-500">{errors.estadoProducto.message}</p>}
-                            </div>
-                            <div>
-                                <label className="block text-gray-700 font-semibold">Stock Mínimo</label>
-                                <input
-                                    type="number"
-                                    placeholder="10"
-                                    className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                                    {...register("stockMinimo")}
-                                />
-                                {errors.stockMinimo && <p className="text-red-500">{errors.stockMinimo.message}</p>}
-                            </div>
-                        </div>
-                        <div className="w-full mt-4">
-                            <button
-                                type="submit"
-                                className="w-full p-2 bg-blue-400 text-white rounded hover:bg-blue-300 font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-400 transition duration-200"
-                            >
-                                Editar Producto
-                            </button>
-                        </div>
+                    <div className="w-full mt-4 col-span-3">
+                        <button
+                            type="submit"
+                            className="w-full p-2 bg-green-400 text-white rounded hover:bg-green-300 font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-400 transition duration-200"
+                        >
+                            Editar Producto
+                        </button>
                     </div>
+
                 </form>
             </div>
         </div>

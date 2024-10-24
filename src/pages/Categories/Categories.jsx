@@ -71,7 +71,6 @@ export default function Categories() {
 
     //!Columns
     const columns = [
-        { header: "ID", accessorKey: "categoriaId" },
         { header: "Nombre de Proveedor", accessorKey: "nombre" },
         {
             header: "Acciones",

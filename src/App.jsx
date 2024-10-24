@@ -18,6 +18,10 @@ import EditCategoria from "./pages/Categories/EditCategoria"
 import Entradas from "./pages/EntradasProducts/Entradas"
 import CreateEntrada from "./pages/EntradasProducts/CreateEntrada"
 import EditEntrada from "./pages/EntradasProducts/EditEntrada"
+import Clientes from "./pages/Clientes/Clientes"
+import CreateCliente from "./pages/Clientes/CreateCliente"
+import EditCliente from "./pages/Clientes/EditCliente"
+import ViewCliente from "./pages/Clientes/ViewCliente"
 
 export default function App() {
   return (
@@ -45,6 +49,11 @@ export default function App() {
           <Route path="/entradas" element={<Entradas />} />
           <Route path="/entradas/createentrada" element={<CreateEntrada />} />
           <Route path="/entradas/edit/:entradaId" element={<EditEntrada />} />
+
+          <Route path="/clientes" element={<Clientes />} />
+          <Route path="/clientes/createcliente" element={<CreateCliente />} />
+          <Route path="/clientes/edit/:clienteId" element={<EditCliente />} />
+          <Route path="/clientes/view/:clienteId" element={<ViewCliente />} />
 
         </Routes>
       </Layout >
