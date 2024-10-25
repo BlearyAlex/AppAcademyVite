@@ -22,6 +22,8 @@ import Clientes from "./pages/Clientes/Clientes"
 import CreateCliente from "./pages/Clientes/CreateCliente"
 import EditCliente from "./pages/Clientes/EditCliente"
 import ViewCliente from "./pages/Clientes/ViewCliente"
+import ViewEntrada from "./pages/EntradasProducts/ViewEntrada"
+import Ventas from "./pages/Ventas/Ventas"
 
 export default function App() {
   return (
@@ -49,11 +51,15 @@ export default function App() {
           <Route path="/entradas" element={<Entradas />} />
           <Route path="/entradas/createentrada" element={<CreateEntrada />} />
           <Route path="/entradas/edit/:entradaId" element={<EditEntrada />} />
+          <Route path="/entradas/view/:entradaId" element={<ViewEntrada />} />
 
           <Route path="/clientes" element={<Clientes />} />
           <Route path="/clientes/createcliente" element={<CreateCliente />} />
           <Route path="/clientes/edit/:clienteId" element={<EditCliente />} />
           <Route path="/clientes/view/:clienteId" element={<ViewCliente />} />
+
+          <Route path="/ventas" element={<Ventas />} />
+          <Route path="/ventas/createventa" element={<Ventas />} />
 
         </Routes>
       </Layout >

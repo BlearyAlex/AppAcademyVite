@@ -14,7 +14,6 @@ import useStoreProduct from "../../store/useStoreProducts";
 import useStoreBrand from "../../store/useStoreBrands";
 import useStoreCategory from "../../store/useStoreCategories";
 import useStoreProvider from "../../store/useStoreProviders";
-import { formatearFechaHora } from "../../utils/formatearFechaHora";
 
 const schema = yup.object().shape({
     nombre: yup.string().required("El nombre es obligatorio."),

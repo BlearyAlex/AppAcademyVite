@@ -1,13 +1,13 @@
 import Table from "../../components/Table"
 
-import useStoreCliente from '../../store/useStoreClientes'
-
 import {
     Pencil,
     Trash,
     Eye,
     CirclePlus
 } from "lucide-react"
+
+import useStoreVenta from '../../store/useStoreVentas'
 
 import Modal from "../../components/Modal"
 
@@ -21,46 +21,51 @@ import toast from "react-hot-toast"
 import useToastStore from "../../store/toastStore"
 
 import { formatearFechaHora } from "../../utils/formatearFechaHora"
+import useStoreCliente from "../../store/useStoreClientes"
 
-export default function Clientes() {
+export default function Ventas() {
 
-    const { clientes, fetchClientes, loading, error, deleteCliente } = useStoreCliente();
+    const { ventas, fetchVentas, loading, error, deleteVenta } = useStoreVenta();
+    console.log(ventas)
+    const { clientes, fetchClientes } = useStoreCliente();
+    console.log(clientes)
     const { showToast } = useToastStore();
     const navigate = useNavigate();
 
     const [open, setOpen] = useState(false);
-    const [selectedClienteId, setSelectedClienteId] = useState(null);
+    const [selectedVentaId, setSelectedVentaId] = useState(null);
 
     // Edit Cliente
-    const handleEdit = (cliente) => {
-        console.log(cliente)
-        console.log("Navegando a editar cliente con ID:", cliente.clienteId);
-        navigate(`/clientes/edit/${cliente.clienteId}`)
+    const handleEdit = (venta) => {
+        console.log(venta)
+        console.log("Navegando a editar cliente con ID:", venta.ventaId);
+        navigate(`/ventas/edit/${venta.ventaId}`)
     }
 
     // ViewProduct
-    const handleView = (cliente) => {
-        navigate(`/clientes/view/${cliente.clienteId}`)
+    const handleView = (venta) => {
+        navigate(`/ventas/view/${venta.ventaId}`)
     }
 
+
     // DeleteProduct
-    const handleDelete = async (clienteId) => {
-        if (selectedClienteId) {
+    const handleDelete = async (ventaId) => {
+        if (selectedVentaId) {
             toast.promise(
-                deleteCliente(clienteId),
+                deleteVenta(ventaId),
                 {
-                    loading: 'Eliminando cliente...',
+                    loading: 'Eliminando venta...',
                     success: () => {
                         // Aquí usamos el store de Zustand para mostrar el toast
-                        showToast('Cliente eliminado con éxito!', 'success');
-                        navigate('/clientes'); // Redirige a la lista de productos
+                        showToast('Venta eliminado con éxito!', 'success');
+                        navigate('/ventas'); // Redirige a la lista de productos
                         fetchClientes()
-                        return 'Cliente eliminado con éxito!'; // Mensaje de éxito
+                        return 'Venta eliminado con éxito!'; // Mensaje de éxito
                     },
                     error: () => {
                         // También usamos el store de Zustand aquí
-                        showToast('No se pudo eliminar el cliente.', 'error');
-                        return 'No se pudo eliminar el cliente.'; // Mensaje de error
+                        showToast('No se pudo eliminar la venta.', 'error');
+                        return 'No se pudo eliminar la venta.'; // Mensaje de error
                     },
 
                 }
@@ -69,17 +74,34 @@ export default function Clientes() {
         }
     }
 
+
+    // GetNombreCliente
+    const getClienteName = (clienteId) => {
+        const cliente = clientes.find(cliente => cliente.clienteId === clienteId);
+        return cliente ? cliente.nombreCompleto : 'Desconocido';
+    }
+
     // FetchProducts
     useEffect(() => {
-        fetchClientes();
-    }, [fetchClientes]);
+        fetchVentas();
+    }, [fetchVentas]);
+
+    // FetcClientes
+    useEffect(() => {
+        fetchClientes()
+    }, [fetchClientes])
 
     const columns = [
-        { header: "Nombre", accessorKey: "nombreCompleto" },
-        { header: "Correo", accessorKey: "email" },
         {
-            header: "Fecha de Registro",
-            accessorKey: "fechaRegistro",
+            header: "Cliente",
+            accessorKey: "clienteId",
+            cell: ({ getValue }) => getClienteName(getValue())
+        },
+        { header: "Estado de Venta", accessorKey: "estadoVenta" },
+        { header: "Monto Total", accessorKey: "monto" },
+        {
+            header: "Fecha de Venta",
+            accessorKey: "fechaCompra",
             cell: ({ getValue }) => {
                 const fechaHora = formatearFechaHora(getValue());
 
@@ -102,7 +124,7 @@ export default function Clientes() {
                     <button onClick={() => handleEdit(row.original)} className="px-2 py-1 text-indigo-500"><Pencil size={20} strokeWidth={2.5} /></button>
                     <button
                         onClick={() => {
-                            setSelectedClienteId(row.original.clienteId);
+                            setSelectedVentaId(row.original.ventaId);
                             setOpen(true);
                         }}
                         className="px-2 py-1 text-red-500"
@@ -115,6 +137,7 @@ export default function Clientes() {
         }
     ];
 
+
     return (
         <div className="bg-gray-50 rounded-lg shadow-md p-4">
             <Breadcrumbs
@@ -125,19 +148,19 @@ export default function Clientes() {
             />
 
             <Table
-                data={clientes}
+                data={ventas}
                 columns={columns}
                 fetchProducts={fetchClientes}
                 loading={loading}
                 error={error}
                 actionButton={{
-                    label: "Crear Cliente",
+                    label: "Crear Venta",
                     icon: <CirclePlus size={20} strokeWidth={2.25} />,
-                    link: "/clientes/createcliente",
+                    link: "/ventas/createventa",
                 }}
                 titles={{
-                    title: "Clientes",
-                    subtitle: "Lista de todos los clientes."
+                    title: "Ventas",
+                    subtitle: "Lista de todas las ventas."
                 }}
             />
 
@@ -148,13 +171,13 @@ export default function Clientes() {
                     <div className="mx-auto my-4 w-48">
                         <h3 className="text-lg font-black text-gray-800">Confirmar Eliminacion</h3>
                         <p className="text-sm text-gray-500">
-                            Estas seguro de eliminar este cliente
+                            Estas seguro de eliminar esta venta
                         </p>
                     </div>
                     <div className="flex gap-4">
                         <button
                             className="w-full p-2 bg-red-100/60 text-red-500 rounded hover:bg-red-200 font-semibold transition duration-200"
-                            onClick={() => handleDelete(selectedClienteId)}
+                            onClick={() => handleDelete(selectedVentaId)}
                         >
                             Delete
                         </button>

@@ -3,7 +3,7 @@
 import SideBar from "../components/SideBar";
 import { SidebarItem } from "../components/SideBar";
 
-import { Boxes, LayoutDashboard, LayoutGrid, Package, ShoppingCart, Bookmark, ArchiveRestore, ContactRound } from "lucide-react";
+import { Boxes, LayoutDashboard, LayoutGrid, Package, ShoppingCart, Bookmark, ArchiveRestore, ContactRound, Receipt } from "lucide-react";
 
 import { Link, useLocation } from "react-router-dom";
 
@@ -37,6 +37,10 @@ export default function Layout({ children }) {
 
                 <Link to="/entradas">
                     <SidebarItem icon={<ArchiveRestore size={20} />} text="Entradas" active={location.pathname === '/entradas'} />
+                </Link>
+
+                <Link to="/ventas">
+                    <SidebarItem icon={<Receipt size={20} />} text="Ventas" active={location.pathname === '/ventas'} />
                 </Link>
 
                 <SidebarItem icon={<Boxes size={20} />} text="Inventario" alert />
