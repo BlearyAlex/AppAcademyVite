@@ -51,7 +51,7 @@ export default function CreateProducto() {
 
     const navigate = useNavigate()
 
-    //! Stores
+    // Stores
     const crearProducto = useStoreProduct((state) => state.createProducto);
     const { brands, fetchBrands } = useStoreBrand()
     const { categories, fetchCategories } = useStoreCategory()
@@ -59,14 +59,14 @@ export default function CreateProducto() {
     const { fetchProducts } = useStoreProduct()
     const showToast = useToastStore((state) => state.showToast);
 
-    //! React-hook-form
+    // React-hook-form
     const { register, handleSubmit, formState: { errors }, watch } = useForm({
         resolver: yupResolver(schema),
 
     });
 
 
-    //! Calcular precio automaticamente
+    // Calcular precio automaticamente
     const costo = watch("costo");
     const utilidad = watch("utilidad");
 

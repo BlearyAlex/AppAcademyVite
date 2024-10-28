@@ -5,7 +5,7 @@ import * as yup from "yup";
 
 import Breadcrumbs from "../../components/Breadcrumbs ";
 
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 import { ShoppingBasket, ReceiptText, FileText, DollarSign, CalendarClock } from "lucide-react";
 
@@ -21,11 +21,10 @@ const schema = yup.object().shape({
 
 export default function ViewEntrada() {
     const { entradaId } = useParams();
-    const { productos, fetchProducts } = useStoreProduct();
+    const { fetchProducts } = useStoreProduct();
     const { fetchEntradaById, entrada, loading, error: entradaError } = useStoreEntrada();
-    const navigate = useNavigate();
     const [productosSeleccionados, setProductosSeleccionados] = useState([]);
-    const { register, handleSubmit, formState: { errors }, reset } = useForm({
+    const { reset } = useForm({
         resolver: yupResolver(schema),
     });
 
@@ -49,7 +48,7 @@ export default function ViewEntrada() {
         }
     }, [entrada, reset]);
 
-    const fechaHora = formatearFechaHora(entrada.fechaDeEmision);
+    const fechaHora = formatearFechaHora(entradaId.fechaDeEmision);
 
     if (loading) return <div>Cargando...</div>;
     if (entradaError) return <div>Error al cargar la entrada: {entradaError.message}</div>;
@@ -59,8 +58,8 @@ export default function ViewEntrada() {
             <div className="mt-6 h-[600px] overflow-y-auto">
                 <Breadcrumbs
                     items={[
-                        { label: 'Productos', link: '/productos' },
-                        { label: 'Editar Producto', link: '' }
+                        { label: 'Entradas', link: '/entradas' },
+                        { label: 'Detalle Entrada', link: '' }
                     ]}
                 />
                 <h2 className="font-bold text-3xl text-gray-500">Detalles de Entrada</h2>

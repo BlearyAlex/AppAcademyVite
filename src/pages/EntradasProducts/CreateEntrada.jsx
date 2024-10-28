@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
+
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+
 import toast from 'react-hot-toast';
-import { CircleArrowLeft, Trash, CirclePlus, PackagePlus } from 'lucide-react';
+
+import { Trash, CirclePlus, PackagePlus } from 'lucide-react';
 import Breadcrumbs from "../../components/Breadcrumbs ";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Table from '../../components/Table';
 import useStoreProduct from "../../store/useStoreProducts";
 import useStoreEntrada from "../../store/useStoreEntradas";
@@ -29,7 +32,7 @@ export default function CreateEntrada() {
 
     const { showToast } = useToastStore()
 
-    const { register, handleSubmit, formState: { errors }, setValue } = useForm({
+    const { register, handleSubmit, formState: { errors } } = useForm({
         resolver: yupResolver(schema),
     });
 
@@ -99,6 +102,7 @@ export default function CreateEntrada() {
             productos: productosSeleccionados,
         };
 
+        console.log(entradaFinal)
 
         toast.promise(
             crearEntrada(entradaFinal),
@@ -159,12 +163,6 @@ export default function CreateEntrada() {
 
     return (
         <div className="p-6 bg-gray-50 rounded-lg shadow-md">
-            <div className="inline-block">
-                <Link to="/entradas">
-                    <CircleArrowLeft size={30} />
-                </Link>
-            </div>
-
             <Breadcrumbs
                 items={[
                     { label: 'Entradas', link: '/entradas' },
