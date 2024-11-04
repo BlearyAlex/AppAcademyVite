@@ -20,7 +20,11 @@ import useToastStore from "../../store/toastStore";
 
 // yup
 const schema = yup.object().shape({
-
+    descuento: yup.number().positive().min("Debe ser al menos 0%").max(100, "No puede ser más de 100%"),
+    estadoVenta: yup.number()
+        .oneOf([0, 1], "El estado es obligatorio"),
+    estadoTipoPago: yup.number()
+        .oneOf([0, 1, 2], "El estado es obligatorio"),
 });
 
 export default function CreateVenta() {
@@ -28,7 +32,7 @@ export default function CreateVenta() {
     const navigate = useNavigate();
 
     // Stores
-    const crearVenta = useStoreVenta((state) => state.crearVenta);
+    const crearVenta = useStoreVenta((state) => state.createVenta);
     const { fetchVentas, ventas } = useStoreVenta();
     console.log(ventas)
 
@@ -42,6 +46,8 @@ export default function CreateVenta() {
     const [productosSeleccionados, setProductosSeleccionados] = useState([]);
     const [totalProductos, setTotalProductos] = useState(0);
     const [totalBruto, setTotalBruto] = useState(0);
+    const [totalNeto, setTotalNeto] = useState(0);
+    const [descuento, setDescuento] = useState(0);
 
     // UseEffects
     useEffect(() => {
@@ -52,16 +58,29 @@ export default function CreateVenta() {
         fetchVentas()
     }, [fetchVentas])
 
-
     useEffect(() => {
         // Calcula el total de productos seleccionados cada vez que cambian
         const total = productosSeleccionados.reduce((sum, prod) => sum + prod.cantidad, 0);
         setTotalProductos(total);
     }, [productosSeleccionados]);
 
+    useEffect(() => {
+        const aplicarDescuento = (bruto, descuento) => {
+            return bruto - (bruto * (descuento / 100));
+        };
+        setTotalNeto(aplicarDescuento(totalBruto, descuento));
+    }, [totalBruto, descuento]);
+
+
+    // Functions
     const calcularTotalBruto = (productos) => {
         const total = productos.reduce((acc, producto) => acc + (producto.cantidad * producto.costo), 0);
         setTotalBruto(total);
+    };
+
+    const handleDescuentoChange = (e) => {
+        const nuevoDescuento = parseFloat(e.target.value) || 0;
+        setDescuento(nuevoDescuento);
     };
 
     const agregarProducto = (producto) => {
@@ -101,37 +120,34 @@ export default function CreateVenta() {
     };
 
     const onSubmit = async (data) => {
+        console.log(data)
         const ventaFinal = {
             ...data,
-            totalProductosEntrada: totalProductos,
+            totalProductos: totalProductos,
             bruto: totalBruto,
+            neto: parseFloat(totalNeto.toFixed(2)),
+            descuento,
             productos: productosSeleccionados,
         };
-
-
         toast.promise(
             crearVenta(ventaFinal),
             {
                 loading: 'Creando venta...',
                 success: () => {
                     fetchVentas()
-                    // Aquí usamos el store de Zustand para mostrar el toast
                     showToast('Venta creado con éxito!', 'success');
-                    navigate('/ventas'); // Redirige a la lista de productos
-                    return 'Venta creada con éxito!'; // Mensaje de éxito
+                    navigate('/ventas');
+                    return 'Venta creada con éxito!';
                 },
                 error: () => {
-                    // También usamos el store de Zustand aquí
                     showToast('No se pudo crear la venta.', 'error');
-                    return 'No se pudo crear la venta.'; // Mensaje de error
+                    return 'No se pudo crear la venta.';
                 },
             }
         );
-
     };
 
     const columns = [
-        { header: "ID", accessorKey: "productoId" },
         { header: "Imagen", accessorKey: "imagen" },
         { header: "Nombre", accessorKey: "nombre" },
         {
@@ -176,6 +192,46 @@ export default function CreateVenta() {
             <h2 className="font-bold text-3xl text-gray-500 mt-4">Crear Venta</h2>
 
             <form onSubmit={handleSubmit(onSubmit)} className="mt-6 grid grid-cols-3 items-start gap-4">
+
+                <div className="col-span-3 bg-white rounded-lg shadow-lg p-6">
+                    <div className="flex gap-5">
+                        <div className="w-full">
+                            <label className="block text-gray-700 font-semibold">Estado de Venta</label>
+                            <select
+                                className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                                {...register("estadoVenta")}
+                            >
+                                <option value={0}>Pagado</option>
+                                <option value={1}>Pendiente</option>
+                            </select>
+                        </div>
+
+                        <div className="w-full">
+                            <label className="block text-gray-700 font-semibold">Tipo de Pago</label>
+                            <select
+                                className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                                {...register("estadoTipoPago")}
+                            >
+                                <option value={0}>Efectivo</option>
+                                <option value={1}>Transferencia</option>
+                                <option value={2}>Tarjeta</option>
+                            </select>
+                        </div>
+
+                        <div className="w-full">
+                            <label className="block text-gray-700 font-semibold w-1/3">Descuento:</label>
+                            <div className="relative">
+                                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700 font-bold">%</span>
+                                <input
+                                    className="block p-2 w-full border pl-8 border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                                    type="number"
+                                    value={descuento || ''}
+                                    onChange={handleDescuentoChange}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 {/* ProductosEntrada */}
                 <div className="col-span-2">
@@ -257,48 +313,13 @@ export default function CreateVenta() {
                             type="number"
                             value={totalProductos}
                             readOnly
-                            {...register("totalProductosEntrada")}
+                            {...register("totalProductos")}
                         />
                         {errors.totalProductosEntrada && <p className="text-red-500">{errors.totalProductosEntrada.message}</p>}
                     </div>
 
                     <div className="flex items-center gap-2">
-                        <label className="block text-gray-700 font-semibold">Estado de Venta</label>
-                        <select
-                            className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                            {...register("estadoVenta")}
-                        >
-                            <option value={0}>Pagado</option>
-                            <option value={1}>Pendiente</option>
-                        </select>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                        <label className="block text-gray-700 font-semibold">Tipo de Pago</label>
-                        <select
-                            className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                            {...register("estadoTipoPago")}
-                        >
-                            <option value={0}>Efectivo</option>
-                            <option value={1}>Transferencia</option>
-                            <option value={2}>Tarjeta</option>
-                        </select>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                        <label className="block text-gray-700 font-semibold w-1/3">Estado Producto:</label>
-                        <input
-                            className="block p-2 w-2/3 border border-gray-300 rounded bg-gray-200"
-                            type="number"
-                            value={totalProductos}
-                            readOnly
-                            {...register("totalProductosEntrada")}
-                        />
-                        {errors.totalProductosEntrada && <p className="text-red-500">{errors.totalProductosEntrada.message}</p>}
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                        <label className="block text-gray-700 font-semibold w-1/3">Bruto:</label>
+                        <label className="block text-gray-700 font-semibold w-1/3">Total Bruto:</label>
                         <div className="relative w-2/3">
                             <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700 font-bold">$</span>
                             <input
@@ -310,6 +331,19 @@ export default function CreateVenta() {
                             />
                         </div>
                         {errors.bruto && <p className="text-red-500">{errors.bruto.message}</p>}
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                        <label className="block text-gray-700 font-semibold w-1/3">Total Neto:</label>
+                        <div className="relative w-2/3">
+                            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700 font-bold">$</span>
+                            <input
+                                type="number"
+                                value={totalNeto.toFixed(2)}
+                                readOnly
+                                className="block pl-8 w-full p-2 border border-gray-300 rounded bg-gray-200"
+                            />
+                        </div>
                     </div>
 
                     <button type="submit" className="mt-4 bg-blue-500 text-white py-2 px-4 rounded">Crear Ventaxds</button>

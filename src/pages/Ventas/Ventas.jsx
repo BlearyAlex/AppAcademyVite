@@ -56,10 +56,9 @@ export default function Ventas() {
                 {
                     loading: 'Eliminando venta...',
                     success: () => {
-                        // Aquí usamos el store de Zustand para mostrar el toast
                         showToast('Venta eliminado con éxito!', 'success');
                         navigate('/ventas'); // Redirige a la lista de productos
-                        fetchClientes()
+                        fetchVentas()
                         return 'Venta eliminado con éxito!'; // Mensaje de éxito
                     },
                     error: () => {
@@ -97,8 +96,25 @@ export default function Ventas() {
             accessorKey: "clienteId",
             cell: ({ getValue }) => getClienteName(getValue())
         },
-        { header: "Estado de Venta", accessorKey: "estadoVenta" },
-        { header: "Monto Total", accessorKey: "monto" },
+        {
+            header: "Estado de Venta",
+            accessorKey: "estadoVenta",
+            cell: ({ row }) => {
+                const estado = row.original.estadoVenta
+                const estadoClass = estado === "Pagado" ? "bg-emerald-100/60 text-emerald-500" : "bg-orange-100/60 text-orange-500";
+                return <span className={`font-semibold px-2 py-0 rounded-lg items-center ${estadoClass}`}>{estado}</span>;
+            }
+        },
+        {
+            header: "Monto Total",
+            accessorKey: "neto",
+            cell: ({ getValue }) => {
+                const neto = getValue(); // Obtiene el valor del neto
+                // Formatear como moneda (cambia 'es-ES' y 'EUR' según sea necesario)
+                const formattedNeto = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(neto);
+                return <span>{formattedNeto}</span>; // Devuelve el valor formateado
+            },
+        },
         {
             header: "Fecha de Venta",
             accessorKey: "fechaCompra",
@@ -137,13 +153,12 @@ export default function Ventas() {
         }
     ];
 
-
     return (
         <div className="bg-gray-50 rounded-lg shadow-md p-4">
             <Breadcrumbs
                 items={[
                     { label: 'Inicio', link: '/' },
-                    { label: 'Clientes', link: '/clientes' }
+                    { label: 'Ventas', link: '/ventas' }
                 ]}
             />
 

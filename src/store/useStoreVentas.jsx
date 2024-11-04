@@ -41,7 +41,7 @@ const useStoreVenta = create((set) => ({
         try {
             await axios.delete(`http://localhost:8080/api/v1/Venta/DeleteVenta/${ventaId}`);
             set((state) => ({
-                ventas: state.clientes.filter((venta) => venta.id !== ventaId)
+                ventas: state.ventas.filter((venta) => venta.id !== ventaId)
             }));
         } catch (error) {
             const errorMessage = error.response?.data?.message || 'No se pudo eliminar la venta.';

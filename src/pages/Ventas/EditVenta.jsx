@@ -1,33 +1,44 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import toast from 'react-hot-toast';
-import { CircleArrowLeft, Trash, CirclePlus, PackagePlus } from 'lucide-react';
+import * as yup from 'yup';
+
+import toast from "react-hot-toast";
+
+import Table from "../../components/Table";
+
+import { PackagePlus, CirclePlus, Trash } from 'lucide-react';
+
 import Breadcrumbs from "../../components/Breadcrumbs ";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import Table from '../../components/Table';
+
+import useStoreVenta from '../../store/useStoreVentas';
 import useStoreProduct from "../../store/useStoreProducts";
-import useStoreEntrada from "../../store/useStoreEntradas";
+
+import { useNavigate, useParams } from "react-router-dom";
 import useToastStore from "../../store/toastStore";
 
-// Define el esquema de validación con Yup
+// yup
 const schema = yup.object().shape({
-    numeroFactura: yup.string().max(50, "El número de factura no puede tener más de 50 caracteres.").required("El número de factura es obligatorio."),
-    folio: yup.string().max(50, "El Folio no puede tener más de 50 caracteres.").nullable(),
+    descuento: yup.number().min(0, "Debe ser al menos 0%").max(100, "No puede ser más de 100%"),
+    estadoVenta: yup.number()
+        .oneOf([0, 1], "El estado es obligatorio"),
+    estadoTipoPago: yup.number()
+        .oneOf([0, 1, 2], "El estado es obligatorio"),
 });
 
-export default function EditEntrada() {
+export default function EditVenta() {
 
-    const { entradaId } = useParams();
-
-    const { productos, fetchProducts, loading, error } = useStoreProduct();
-    const { updateEntrada, fetchEntradaById, entrada, fetchEntradas } = useStoreEntrada();
-
-    const { showToast } = useToastStore()
-
+    const { ventaId } = useParams();
     const navigate = useNavigate();
 
+    // Stores
+    const { productos, fetchProducts, loading, error } = useStoreProduct();
+    const { updateVenta, fetchVentaById, venta, fetchVentas } = useStoreVenta();
+    console.log(venta)
+    const { showToast } = useToastStore();
+
+    // Use form
     const { register, handleSubmit, formState: { errors }, reset } = useForm({
         resolver: yupResolver(schema),
     });
@@ -35,38 +46,37 @@ export default function EditEntrada() {
     const [productosSeleccionados, setProductosSeleccionados] = useState([]);
     const [totalProductos, setTotalProductos] = useState(0);
     const [totalBruto, setTotalBruto] = useState(0);
+    const [totalNeto, setTotalNeto] = useState(0);
+    const [descuento, setDescuento] = useState(0);
 
-    // FetchProducts
+    // UseEffects
     useEffect(() => {
         fetchProducts();
     }, [fetchProducts]);
 
-    // Obtener datos de la entrada a actualizar
     useEffect(() => {
-        if (fetchEntradaById) {
-            console.log("Fetching entrada with ID:", entradaId);
-            fetchEntradaById(entradaId);
+        if (fetchVentaById) {
+            console.log("Fetching venta with Id:", ventaId)
+            fetchVentaById(ventaId)
         }
-    }, [entradaId, fetchEntradaById]);
+    }, [ventaId, fetchVentaById]);
 
     useEffect(() => {
-        if (entrada) {
-            // Resetea los campos del formulario con los datos de la entrada
+        if (venta) {
             reset({
-                numeroFactura: entrada.numeroFactura,
-                folio: entrada.folio,
-                totalProductosEntrada: entrada.totalProductosEntrada,
-                bruto: entrada.bruto,
+                descuento: venta.descuento,
+                neto: venta.neto,
+                estadoVenta: venta.estadoVenta,
+                estadoTipoPago: venta.estadoTipoPago,
+                detalleVentas: venta.detalleVentas
             });
 
-            // Asignar los productos de la entrada al estado de productos seleccionados
-            if (entrada.productos) {
-                console.log(entrada.productos)
-                setProductosSeleccionados(entrada.productos);
-                calcularTotalBruto(entrada.productos); // Calcula el bruto
+            if (venta.detalleVentas) {
+                setProductosSeleccionados(venta.detalleVentas || []);
+                calcularTotalBruto(venta.detalleVentas || []);
             }
         }
-    }, [entrada, reset]);
+    }, [venta, reset]);
 
     useEffect(() => {
         // Calcula el total de productos seleccionados cada vez que cambian
@@ -74,13 +84,26 @@ export default function EditEntrada() {
         setTotalProductos(total);
     }, [productosSeleccionados]);
 
+    useEffect(() => {
+        const aplicarDescuento = (bruto, descuento) => {
+            return bruto - (bruto * (descuento / 100));
+        };
+        setTotalNeto(aplicarDescuento(totalBruto, descuento));
+    }, [totalBruto, descuento]);
 
+    // Functions
     const calcularTotalBruto = (productos) => {
         const total = productos.reduce((acc, producto) => acc + (producto.cantidad * producto.costo), 0);
         setTotalBruto(total);
     };
 
+    const handleDescuentoChange = (e) => {
+        const nuevoDescuento = parseFloat(e.target.value) || 0;
+        setDescuento(nuevoDescuento);
+    };
+
     const agregarProducto = (producto) => {
+        console.log(producto)
         const productoExistente = productosSeleccionados.find(p => p.productoId === producto.productoId);
 
         if (productoExistente) {
@@ -90,13 +113,18 @@ export default function EditEntrada() {
             setProductosSeleccionados(productosActualizados);
             calcularTotalBruto(productosActualizados);
         } else {
-            const nuevosProductos = [...productosSeleccionados, { ...producto, cantidad: 1, nombreProducto: producto.nombre }];
+            const nuevosProductos = [...productosSeleccionados, { ...producto, cantidad: 1 }];
             setProductosSeleccionados(nuevosProductos);
             calcularTotalBruto(nuevosProductos);
         }
     };
 
     const actualizarCantidadProducto = (productoId, nuevaCantidad) => {
+        if (nuevaCantidad < 1) {
+            toast.error("La cantidad debe ser al menos 1.");
+            return;
+        }
+
         const productosActualizados = productosSeleccionados.map(p =>
             p.productoId === productoId ? { ...p, cantidad: parseInt(nuevaCantidad, 10) } : p
         );
@@ -110,55 +138,53 @@ export default function EditEntrada() {
         calcularTotalBruto(productosActualizados);
     };
 
-    const onSubmit = (data) => {
-        const entradaFinal = {
+    const onSubmit = async (data) => {
+        console.log("Total neto antes de enviar:", totalNeto)
+        console.log("Total Bruto:", totalBruto)
+        const ventaFinal = {
             ...data,
-            entradaId: entradaId,
-            totalProductosEntrada: totalProductos,
+            ventaId: ventaId,
+            totalProductos: totalProductos,
             bruto: totalBruto,
+            neto: totalNeto,
+            descuento,
             productos: productosSeleccionados.map(producto => {
-                // Si el producto tiene EntradaProductoId, es un producto existente
-                if (producto.EntradaProductoId) {
+                if (producto.DetalleVentaId) {
                     return {
                         ...producto,
-                        entradaId: entradaId,
-                        EntradaProductoId: producto.EntradaProductoId
+                        ventaId: ventaId,
+                        DetalleVentaId: producto.DetalleVentaId
                     };
                 } else {
                     return {
                         ...producto,
-                        entradaId: entradaId,
+                        ventaId: ventaId,
                         productoId: producto.productoId,
                         cantidad: producto.cantidad,
                         costo: producto.costo
-                    };
+                    }
                 }
-            }),
+            })
         };
         toast.promise(
-            updateEntrada(entradaFinal),
+            updateVenta(ventaFinal),
             {
-                loading: 'Editando entrada...',
+                loading: 'Editando venta...',
                 success: () => {
-                    fetchEntradas()
-                    // Aquí usamos el store de Zustand para mostrar el toast
-                    showToast('Entrada editado con éxito!', 'success');
-                    navigate('/entradas'); // Redirige a la lista de productos
-                    return 'Entrada editado con éxito!'; // Mensaje de éxito
+                    fetchVentas()
+                    showToast('Venta editada con éxito!', 'success');
+                    navigate('/ventas');
+                    return 'Venta editada con éxito!';
                 },
                 error: () => {
-                    // También usamos el store de Zustand aquí
-                    showToast('No se pudo editar la entrada.', 'error');
-                    return 'No se pudo editar la entrada.'; // Mensaje de error
+                    showToast('No se pudo editar la venta.', 'error');
+                    return 'No se pudo editar la venta.';
                 },
             }
         );
-
     };
 
-
     const columns = [
-        { header: "ID", accessorKey: "productoId" },
         { header: "Imagen", accessorKey: "imagen" },
         { header: "Nombre", accessorKey: "nombre" },
         {
@@ -194,22 +220,54 @@ export default function EditEntrada() {
 
     return (
         <div className="p-6 bg-gray-50 rounded-lg shadow-md">
-            <div className="inline-block">
-                <Link to="/entradas">
-                    <CircleArrowLeft size={30} />
-                </Link>
-            </div>
-
             <Breadcrumbs
                 items={[
-                    { label: 'Entradas', link: '/entradas' },
-                    { label: 'Editar Entrada', link: '/entradas/editentrada' }
+                    { label: 'Ventas', link: '/ventas' },
+                    { label: 'Editar Venta', link: '/ventas/editventa' }
                 ]}
             />
-            <h2 className="font-bold text-3xl text-gray-500 mt-4">Editar Entrada</h2>
-            <p className="text-gray-600">Complete el formulario para agregar una nueva entrada.</p>
+            <h2 className="font-bold text-3xl text-gray-500 mt-4">Editar Venta</h2>
 
             <form onSubmit={handleSubmit(onSubmit)} className="mt-6 grid grid-cols-3 items-start gap-4">
+
+                <div className="col-span-3 bg-white rounded-lg shadow-lg p-6">
+                    <div className="flex gap-5">
+                        <div className="w-full">
+                            <label className="block text-gray-700 font-semibold">Estado de Venta</label>
+                            <select
+                                className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                                {...register("estadoVenta")}
+                            >
+                                <option value={0}>Pagado</option>
+                                <option value={1}>Pendiente</option>
+                            </select>
+                        </div>
+
+                        <div className="w-full">
+                            <label className="block text-gray-700 font-semibold">Tipo de Pago</label>
+                            <select
+                                className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                                {...register("estadoTipoPago")}
+                            >
+                                <option value={0}>Efectivo</option>
+                                <option value={1}>Transferencia</option>
+                                <option value={2}>Tarjeta</option>
+                            </select>
+                        </div>
+
+                        <div className="w-full">
+                            <label className="block text-gray-700 font-semibold w-1/3">Descuento:</label>
+                            <div className="relative">
+                                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700 font-bold">%</span>
+                                <input
+                                    className="block p-2 w-full border pl-8 border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                                    type="number"
+                                    {...register("descuento", { onChange: handleDescuentoChange })}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 {/* ProductosEntrada */}
                 <div className="col-span-2">
@@ -287,39 +345,17 @@ export default function EditEntrada() {
                     <div className="flex items-center gap-2">
                         <label className="block text-gray-700 font-semibold w-1/3">Total de Productos:</label>
                         <input
-                            className="block w-2/3 p-2 border border-gray-300 rounded bg-gray-200"
+                            className="block p-2 w-2/3 border border-gray-300 rounded bg-gray-200"
                             type="number"
                             value={totalProductos}
                             readOnly
-                            {...register("totalProductosEntrada")}
+                            {...register("totalProductos")}
                         />
                         {errors.totalProductosEntrada && <p className="text-red-500">{errors.totalProductosEntrada.message}</p>}
                     </div>
 
                     <div className="flex items-center gap-2">
-                        <label className="block text-gray-700 font-semibold w-1/3">Número de factura:</label>
-                        <input
-                            type="text"
-                            {...register("numeroFactura")}
-                            className="block w-2/3 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                            placeholder="Ej. FAC-7890100.00"
-                        />
-                        {errors.numeroFactura && <p className="text-red-500">{errors.numeroFactura.message}</p>}
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                        <label className="block text-gray-700 font-semibold w-1/3">Folio:</label>
-                        <input
-                            type="text"
-                            {...register("folio")}
-                            className="block w-2/3 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                            placeholder="Ej. 123456"
-                        />
-                        {errors.folio && <p className="text-red-500">{errors.folio.message}</p>}
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                        <label className="block text-gray-700 font-semibold w-1/3">Bruto:</label>
+                        <label className="block text-gray-700 font-semibold w-1/3">Total Bruto:</label>
                         <div className="relative w-2/3">
                             <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700 font-bold">$</span>
                             <input
@@ -333,9 +369,23 @@ export default function EditEntrada() {
                         {errors.bruto && <p className="text-red-500">{errors.bruto.message}</p>}
                     </div>
 
-                    <button type="submit" className="mt-4 bg-blue-500 text-white py-2 px-4 rounded">Editar Entrada</button>
+                    <div className="flex items-center gap-2">
+                        <label className="block text-gray-700 font-semibold w-1/3">Total Neto:</label>
+                        <div className="relative w-2/3">
+                            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700 font-bold">$</span>
+                            <input
+                                type="number"
+                                value={totalNeto.toFixed(2)}
+                                readOnly
+                                className="block pl-8 w-full p-2 border border-gray-300 rounded bg-gray-200"
+                                {...register("neto")}
+                            />
+                        </div>
+                    </div>
+
+                    <button type="submit" className="mt-4 bg-blue-500 text-white py-2 px-4 rounded">Editar Venta</button>
                 </div>
             </form>
         </div>
-    );
+    )
 }

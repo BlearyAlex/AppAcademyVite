@@ -25,6 +25,8 @@ import ViewCliente from "./pages/Clientes/ViewCliente"
 import ViewEntrada from "./pages/EntradasProducts/ViewEntrada"
 import Ventas from "./pages/Ventas/Ventas"
 import CreateVenta from "./pages/Ventas/CreateVenta"
+import EditVenta from "./pages/Ventas/EditVenta"
+import ViewVentas from "./pages/Ventas/ViewVentas"
 
 export default function App() {
   return (
@@ -61,6 +63,8 @@ export default function App() {
 
           <Route path="/ventas" element={<Ventas />} />
           <Route path="/ventas/createventa" element={<CreateVenta />} />
+          <Route path="/ventas/edit/:ventaId" element={<EditVenta />} />
+          <Route path="/ventas/view/:ventaId" element={<ViewVentas />} />
 
         </Routes>
       </Layout >

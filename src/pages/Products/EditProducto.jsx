@@ -15,7 +15,7 @@ import useStoreBrand from "../../store/useStoreBrands";
 import useStoreCategory from "../../store/useStoreCategories";
 import useStoreProvider from "../../store/useStoreProviders";
 
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 import useToastStore from "../../store/toastStore";
 
 const schema = yup.object().shape({
