@@ -1,121 +1,125 @@
-import { useEffect } from "react";
-
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
-import toast from "react-hot-toast";
+import toast from 'react-hot-toast';
 
 import Breadcrumbs from "../../components/Breadcrumbs ";
 
-import { useNavigate, useParams } from "react-router-dom";
+import useStoreStudent from "../../store/useStoreStudents";
+
+import { useNavigate, Link } from "react-router-dom";
 
 import useToastStore from "../../store/toastStore";
-import useStoreCliente from "../../store/useStoreClientes";
 
 // Yup
 const schema = yup.object().shape({
-    nombreCompleto: yup.string().required("El nombre es obligatorio."),
-    email: yup.string().email("El correo no es valido."),
-    telefono: yup.string().required("El teléfono es obligatorio."),
-    direccion: yup.string(),
+    nombre: yup.string().required("El nombre es obligatorio."),
+    apellido: yup.string().required("El apellido es obligatorio."),
+    telefono: yup.string()
+        .required("El teléfono es obligatorio."),
+    estadoProducto: yup.number()
+        .oneOf([0, 1], "El estado es obligatorio"),
+
 });
 
-export default function EditCliente() {
+export default function CreateStudent() {
 
-    const { clienteId } = useParams()
     const navigate = useNavigate();
 
     // Stores
-    const updateCliente = useStoreCliente((state) => state.updateCliente);
-    const cliente = useStoreCliente((state) => state.cliente);
-    const fetchClienteById = useStoreCliente((state) => state.fetchClienteById);
-    const loading = useStoreCliente((state) => state.loading);
-    const showToast = useToastStore((state) => state.showToast);
+    const createStudent = useStoreStudent((state) => state.createStudent);
+    const { fetchStudents } = useStoreStudent();
+    const { showToast } = useToastStore();
 
     // React-hook-form
-    const { register, handleSubmit, formState: { errors }, reset } = useForm({
+    const { register, handleSubmit, formState: { errors } } = useForm({
         resolver: yupResolver(schema),
-
     });
 
-    // UseEffect
-    useEffect(() => {
-        if (fetchClienteById) {
-            console.log("Fetching product with ID:", clienteId);
-            fetchClienteById(clienteId)
-        }
-    }, [clienteId, fetchClienteById]);
-
-    useEffect(() => {
-        if (cliente) {
-            reset(cliente)
-        }
-    }, [cliente, reset])
-
-    if (loading) return <p>Cargando...</p>;
-
-    if (!cliente) return <p>Cliente no encontrado</p>;
-
+    // Functions
     const onSubmit = async (data) => {
         console.log("Valores del formulario enviados:", data);
-        const nuevoCliente = {
+        const nuevoEstudiante = {
             ...data,
-            clienteId: clienteId,
         };
 
-        try {
-            await toast.promise(
-                updateCliente(nuevoCliente),  // Asegúrate que updateCliente retorne una promesa
-                {
-                    loading: 'Editando Cliente...',
-                    success: 'Cliente editado con éxito!',
-                    error: 'No se pudo editar el cliente.',
-                }
-            );
-            showToast('Cliente editado con éxito!', 'success');
-            navigate('/clientes');
-        } catch (error) {
-            console.error("Error detectado:", error);
-            showToast('No se pudo editar el cliente.', 'error');
-        }
+        toast.promise(
+            createStudent(nuevoEstudiante),
+            {
+                loading: 'Creando Estudiante...',
+                success: () => {
+                    fetchStudents()
+                    showToast('Estudiante creado con éxito!', 'success');
+                    navigate('/estudiantes');
+                    return 'Estudiante creado con éxito!';
+                },
+                error: () => {
+                    showToast('No se pudo crear el estudiante.', 'error');
+                    return 'No se pudo crear el estudiante.';
+                },
+            }
+        );
     };
-
 
     return (
         <div className="p-6 bg-gray-50 rounded-lg shadow-md">
             <div className="mt-6 h-[600px] overflow-y-auto">
                 <Breadcrumbs
                     items={[
-                        { label: "Clientes", link: "/clientes" },
-                        { label: "Crear Cliente", link: "/clientes/createcliente" },
+                        { label: "Estudiantes", link: "/estudiantes" },
+                        { label: "Crear Estudiante", link: "/estudiantes/createestudiante" },
                     ]}
                 />
 
                 <div>
-                    <h2 className="font-bold text-3xl text-gray-500">Crear Cliente</h2>
+                    <h2 className="font-bold text-3xl text-gray-500">Crear Estudiante</h2>
                     <p className="text-gray-600">
-                        Complete el formulario para agregar un nuevo cliente.
+                        Complete el formulario para agregar un nuevo estudiante.
                     </p>
                 </div>
 
                 <form
                     className="mt-6 grid grid-cols-2 row items-start gap-4 bg-white rounded-lg shadow-lg p-6"
                     onSubmit={handleSubmit((data) => {
-                        console.log(data)
                         onSubmit(data);
                     })}
                 >
+                    <div>
+                        <label className="block text-gray-700 font-semibold">Estatus del Estudiante</label>
+                        <select
+                            className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                            {...register("estadoProducto")}
+                        >
+                            <option value={0}>Alta</option>
+                            <option value={1}>Baja</option>
+                        </select>
+                        {errors.estadoProducto && <p className="text-red-500">{errors.estadoProducto.message}</p>}
+                    </div>
+
                     <div>
                         <label className="block text-gray-700 font-semibold">Nombre:</label>
                         <input
                             className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
                             placeholder="Ingresa el nombre del cliente"
                             type="text"
-                            {...register("nombreCompleto")}
+                            {...register("nombre")}
                         />
-                        {errors.nombreCompleto && (
-                            <p className="text-red-500">{errors.nombreCompleto.message}</p>
+                        {errors.nombre && (
+                            <p className="text-red-500">{errors.nombre.message}</p>
+                        )}
+                    </div>
+
+                    <div>
+                        <label className="block text-gray-700 font-semibold">Apellido:</label>
+                        <input
+                            className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                            placeholder="Ingresa el nombre del cliente"
+                            type="text"
+                            {...register("apellido")}
+                        />
+                        {errors.apellido && (
+                            <p className="text-red-500">{errors.apellido.message}</p>
                         )}
                     </div>
 
@@ -161,16 +165,31 @@ export default function EditCliente() {
                             <p className="text-red-500">{errors.direccion.message}</p>
                         )}
                     </div>
+
+                    <div>
+                        <label className="block text-gray-700 font-semibold">
+                            Fecha de Nacimiento:
+                        </label>
+                        <input
+                            className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                            type="date"
+                            {...register("fechaNacimiento")}
+                        />
+                        {errors.fechaNacimiento && (
+                            <p className="text-red-500">{errors.fechaNacimiento.message}</p>
+                        )}
+                    </div>
+
                     <div className="w-full mt-4 col-span-3">
                         <button
                             type="submit"
                             className="w-full p-2 bg-green-400 text-white rounded hover:bg-green-300 font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-400 transition duration-200"
                         >
-                            Crear Cliente
+                            Crear Estudiante
                         </button>
                     </div>
                 </form>
             </div>
         </div>
-    );
+    )
 }

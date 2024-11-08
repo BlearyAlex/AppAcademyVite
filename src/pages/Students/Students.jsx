@@ -14,47 +14,49 @@ import Modal from "../../components/Modal"
 
 import { useNavigate } from "react-router-dom"
 
-import useStoreCategory from "../../store/useStoreCategories"
-
 import useToastStore from "../../store/toastStore"
+
+import useStoreStudent from "../../store/useStoreStudents"
 
 import toast from "react-hot-toast"
 
-export default function Categories() {
+export default function Students() {
 
     // Params
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
     // Stores
-    const { fetchCategories, categories, deleteCategory, loading, error } = useStoreCategory()
-    const { showToast } = useToastStore()
+    const { fetchStudents, students, deleteStudent, loading, error } = useStoreStudent();
+    console.log(students)
+    const { showToast } = useToastStore();
 
     // EditProvider
-    const handleEdit = (category) => {
-        console.log("marcas a editar:", category)
+    const handleEdit = (student) => {
+        console.log("estudiantes a editar:", student)
 
-        navigate(`/categorias/edit/${category.categoriaId}`)
+        navigate(`/categorias/edit/${student.estudianteId}`)
     }
 
+    // UseState
     const [open, setOpen] = useState(false);
-    const [selectedCategoryId, setSelectedCategoryId] = useState(null);
+    const [selectedStudentId, setSelectedStudentId] = useState(null);
 
-    // DeleteProduct
-    const handleDelete = async (categoriaId) => {
-        if (selectedCategoryId) {
+    // DeleteStudent
+    const handleDelete = async (studentId) => {
+        if (selectedStudentId) {
             toast.promise(
-                deleteCategory(categoriaId),
+                deleteStudent(studentId),
                 {
-                    loading: 'Eliminando categoria...',
+                    loading: 'Eliminando estudiante...',
                     success: () => {
-                        showToast('Categoria eliminado con éxito!', 'success');
-                        navigate('/categorias'); // Redirige a la lista de productos
-                        fetchCategories()
-                        return 'Categoria eliminado con éxito!'; // Mensaje de éxito
+                        showToast('Estudiante eliminado con éxito!', 'success');
+                        navigate('/estudiantes'); // Redirige a la lista de productos
+                        fetchStudents()
+                        return 'Estudiante eliminado con éxito!'; // Mensaje de éxito
                     },
                     error: (err) => {
-                        showToast(err.message || 'No se pudo eliminar la categoria.', 'error');
-                        return err.message || 'No se pudo eliminar la categoria.';
+                        showToast(err.message || 'No se pudo eliminar el estudiante.', 'error');
+                        return err.message || 'No se pudo eliminar el estudiante.';
                     },
 
                 }
@@ -65,12 +67,23 @@ export default function Categories() {
 
     // FetchsProviders
     useEffect(() => {
-        fetchCategories()
-    }, [fetchCategories])
+        fetchStudents()
+    }, [fetchStudents])
 
     // Columns
     const columns = [
-        { header: "Nombre de Proveedor", accessorKey: "nombre" },
+        { header: "Nombre", accessorKey: "nombre" },
+        { header: "Apellido", accessorKey: "apellido" },
+        { header: "Telefono", accessorKey: "telefono" },
+        {
+            header: "Estado",
+            accessorKey: "estadoEstudiante",
+            cell: ({ row }) => {
+                const estado = row.original.estadoEstudiante
+                const estadoClass = estado === "Alta" ? "bg-emerald-100/60 text-emerald-500" : "bg-red-100/60 text-red-500"; // Cambia a los colores que desees
+                return <span className={`font-semibold px-2 py-0 rounded-lg items-center ${estadoClass}`}>{estado}</span>;
+            }
+        },
         {
             header: "Acciones",
             accessorKey: "acciones",
@@ -79,7 +92,7 @@ export default function Categories() {
                     <button onClick={() => handleEdit(row.original)} data-tooltip-id="editTooltip" data-tooltip-content="Editar" className="px-2 py-1 text-indigo-500"><Pencil size={20} strokeWidth={2.5} /></button>
                     <button
                         onClick={() => {
-                            setSelectedCategoryId(row.original.categoriaId);
+                            setSelectedStudentId(row.original.estudianteId);
                             setOpen(true);
                         }}
                         className="px-2 py-1 text-red-500"
@@ -96,23 +109,23 @@ export default function Categories() {
             <Breadcrumbs
                 items={[
                     { label: 'Inicio', link: '/' },
-                    { label: 'Categorias', link: '/categorias' }
+                    { label: 'Estudiantes', link: '/estudiantes' }
                 ]}
             />
             <Table
-                data={categories}
+                data={students}
                 columns={columns}
-                fetchProducts={fetchCategories}
+                fetchProducts={fetchStudents}
                 loading={loading}
                 error={error}
                 actionButton={{
-                    label: "Crear Categoria",
+                    label: "Crear Estudiante",
                     icon: <CirclePlus size={20} strokeWidth={2.25} />,
-                    link: "/categorias/createcategoria",
+                    link: "/estudiantes/createestudiante",
                 }}
                 titles={{
-                    title: "Categorias",
-                    subtitle: "Lista de todos las categorias."
+                    title: "Estudiantes",
+                    subtitle: "Lista de todos los estudiantes."
                 }}
             />
 
@@ -123,13 +136,13 @@ export default function Categories() {
                     <div className="mx-auto my-4 w-48">
                         <h3 className="text-lg font-black text-gray-800">Confirmar Eliminacion</h3>
                         <p className="text-sm text-gray-500">
-                            Estas seguro de eliminar esta categoria?
+                            Estas seguro de eliminar este estudiante
                         </p>
                     </div>
                     <div className="flex gap-4">
                         <button
                             className="w-full p-2 bg-red-100/60 text-red-500 rounded hover:bg-red-200 font-semibold transition duration-200"
-                            onClick={() => handleDelete(selectedCategoryId)}
+                            onClick={() => handleDelete(selectedStudentId)}
                         >
                             Delete
                         </button>

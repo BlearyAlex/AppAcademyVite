@@ -4,8 +4,6 @@ import * as yup from "yup";
 
 import toast from 'react-hot-toast';
 
-import { CircleArrowLeft } from 'lucide-react'
-
 import Breadcrumbs from "../../components/Breadcrumbs ";
 
 import useStoreCategory from "../../store/useStoreCategories";
@@ -19,20 +17,18 @@ const schema = yup.object().shape({
     nombre: yup.string().required("El nombre es obligatorio."),
 });
 
-
 export default function CreateCategoria() {
 
     const navigate = useNavigate()
 
-    //! Stores
+    // Stores
     const crearProveedor = useStoreCategory((state) => state.createCategory);
     const { fetchCategories } = useStoreCategory()
     const showToast = useToastStore((state) => state.showToast);
 
-    //! React-hook-form
+    // React-hook-form
     const { register, handleSubmit, formState: { errors } } = useForm({
         resolver: yupResolver(schema),
-
     });
 
     const onSubmit = async (data) => {
@@ -61,11 +57,6 @@ export default function CreateCategoria() {
 
     return (
         <div className="p-6 bg-gray-50 rounded-lg shadow-md">
-            <div className="inline-block">
-                <Link to="/categorias">
-                    <CircleArrowLeft size={30} />
-                </Link>
-            </div>
             <div className="mt-6 h-[600px] overflow-y-auto">
                 <Breadcrumbs
                     items={[

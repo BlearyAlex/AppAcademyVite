@@ -7,7 +7,7 @@ import Breadcrumbs from "../../components/Breadcrumbs ";
 
 import { useParams } from "react-router-dom";
 
-import { ShoppingBasket, DollarSign, CalendarClock } from "lucide-react";
+import { ShoppingBasket, DollarSign, CalendarClock, Wallet, Tag } from "lucide-react";
 
 import useStoreProduct from "../../store/useStoreProducts";
 import useStoreVenta from "../../store/useStoreVentas";
@@ -50,26 +50,29 @@ export default function ViewVentas() {
         }
     }, [venta, reset]);
 
-    const fechaHora = formatearFechaHora(ventaId.fechaCompra);
+    const fechaHora = formatearFechaHora(venta?.fechaCompra);
 
     if (loading) return <div>Cargando...</div>;
     if (ventaError) return <div>Error al cargar la entrada: {ventaError.message}</div>;
+
+    if (!venta) return <div>No se encontró la venta.</div>;
 
     return (
         <div className="p-6 bg-gray-50 rounded-lg shadow-md">
             <div className="mt-6 h-[600px] overflow-y-auto">
                 <Breadcrumbs
                     items={[
-                        { label: 'Entradas', link: '/entradas' },
-                        { label: 'Detalle Entrada', link: '' }
+                        { label: 'Ventas', link: '/ventas' },
+                        { label: 'Detalle Venta', link: '' }
                     ]}
                 />
-                <h2 className="font-bold text-3xl text-gray-500">Detalles de Entrada</h2>
+                <h2 className="font-bold text-3xl text-gray-500">Detalles de Venta</h2>
 
                 <div className="bg-white mt-6 grid grid-cols-2 items-start gap-4 rounded-lg shadow-md">
                     <div className="flex p-10">
                         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                             <tbody>
+
                                 <tr style={{ borderBottom: '1px solid #ccc', marginBottom: '10px' }}>
                                     <th style={{ textAlign: 'center', padding: '10px' }} className="text-[#6c7592] font-bold">
                                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -88,6 +91,57 @@ export default function ViewVentas() {
                                     <th style={{ textAlign: 'center', padding: '10px' }} className="text-[#6c7592] font-bold">
                                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                             <span style={{ marginRight: '5px' }}>
+                                                <Wallet size={20} />
+                                            </span>
+                                            Tipo de pago
+                                        </div>
+                                    </th>
+                                    <td style={{ textAlign: 'center' }} className={`font-semibold py-3 ${(() => {
+                                        switch (venta?.estadoTipoPago) {
+                                            case 0:
+                                                return 'bg-violet-100/60 text-violet-500';
+                                            case 1:
+                                                return 'bg-yellow-100/60 text-yellow-500';
+                                            case 2:
+                                                return 'bg-pink-100/60 text-pink-500';
+                                            default:
+                                                return ''; // Default style if none match
+                                        }
+                                    })()}`}>
+                                        {(() => {
+                                            switch (venta?.estadoTipoPago) {
+                                                case 0:
+                                                    return 'Efectivo';
+                                                case 1:
+                                                    return 'Transferencia';
+                                                case 2:
+                                                    return 'Tarjeta';
+                                                default:
+                                                    return 'Desconocido';
+                                            }
+                                        })()}
+                                    </td>
+
+                                </tr>
+
+                                <tr style={{ borderBottom: '1px solid #ccc', marginBottom: '10px' }}>
+                                    <th style={{ textAlign: 'center', padding: '10px' }} className="text-[#6c7592] font-bold">
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            <span style={{ marginRight: '5px' }}>
+                                                <Tag size={20} />
+                                            </span>
+                                            Estado de venta
+                                        </div>
+                                    </th>
+                                    <td style={{ textAlign: 'center' }} className={`font-semibold py-3 ${venta?.estadoVenta === 0 ? 'bg-emerald-100/60 text-emerald-500' : 'bg-orange-100/60 text-orange-500'}`}>
+                                        {venta?.estadoVenta === 0 ? 'Pagado' : 'Pendiente'}
+                                    </td>
+                                </tr>
+
+                                <tr style={{ borderBottom: '1px solid #ccc', marginBottom: '10px' }}>
+                                    <th style={{ textAlign: 'center', padding: '10px' }} className="text-[#6c7592] font-bold">
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            <span style={{ marginRight: '5px' }}>
                                                 <DollarSign size={20} />
                                             </span>
                                             Bruto
@@ -95,6 +149,20 @@ export default function ViewVentas() {
                                     </th>
                                     <td style={{ textAlign: 'center', padding: '10px' }} className="text-[#6c7592]">
                                         $ {venta ? venta.bruto : 0}.00
+                                    </td>
+                                </tr>
+
+                                <tr style={{ borderBottom: '1px solid #ccc', marginBottom: '10px' }}>
+                                    <th style={{ textAlign: 'center', padding: '10px' }} className="text-[#6c7592] font-bold">
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            <span style={{ marginRight: '5px' }}>
+                                                <DollarSign size={20} />
+                                            </span>
+                                            Neto
+                                        </div>
+                                    </th>
+                                    <td style={{ textAlign: 'center', padding: '10px' }} className="text-[#6c7592]">
+                                        $ {venta ? venta.neto : 0}.00
                                     </td>
                                 </tr>
 

@@ -3,7 +3,7 @@
 import SideBar from "../components/SideBar";
 import { SidebarItem } from "../components/SideBar";
 
-import { Boxes, LayoutDashboard, LayoutGrid, Package, ShoppingCart, Bookmark, ArchiveRestore, ContactRound, Receipt } from "lucide-react";
+import { Boxes, LayoutDashboard, LayoutGrid, Package, ShoppingCart, Bookmark, ArchiveRestore, ContactRound, Receipt, School } from "lucide-react";
 
 import { Link, useLocation } from "react-router-dom";
 
@@ -33,6 +33,10 @@ export default function Layout({ children }) {
                     <SidebarItem icon={<LayoutGrid size={20} />} text="Categorias" active={location.pathname === '/categorias'} />
                 </Link>
 
+                <Link to="/clientes">
+                    <SidebarItem icon={<ContactRound size={20} />} text="Clientes" active={location.pathname === '/clientes'} />
+                </Link>
+
                 <hr className="my-3" />
 
                 <Link to="/entradas">
@@ -47,8 +51,8 @@ export default function Layout({ children }) {
 
                 <hr className="my-3" />
 
-                <Link to="/clientes">
-                    <SidebarItem icon={<ContactRound size={20} />} text="Clientes" active={location.pathname === '/clientes'} />
+                <Link to="/estudiantes">
+                    <SidebarItem icon={<School size={20} />} text="Estudiantes" active={location.pathname === '/estudiantes'} />
                 </Link>
 
             </SideBar>

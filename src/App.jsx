@@ -27,6 +27,9 @@ import Ventas from "./pages/Ventas/Ventas"
 import CreateVenta from "./pages/Ventas/CreateVenta"
 import EditVenta from "./pages/Ventas/EditVenta"
 import ViewVentas from "./pages/Ventas/ViewVentas"
+import Students from "./pages/Students/Students"
+import CreateStudent from "./pages/Students/CreateStudent"
+import EditStudent from "./pages/Students/EditStudent"
 
 export default function App() {
   return (
@@ -66,6 +69,10 @@ export default function App() {
           <Route path="/ventas/edit/:ventaId" element={<EditVenta />} />
           <Route path="/ventas/view/:ventaId" element={<ViewVentas />} />
 
+          <Route path="/estudiantes" element={<Students />} />
+          <Route path="/estudiantes/createestudiante" element={<CreateStudent />} />
+          <Route path="/estudiantes/edit/:studentId" element={<EditStudent />} />
+          <Route path="/ventas/view/:ventaId" element={<ViewVentas />} />
         </Routes>
       </Layout >
       <Toaster
