@@ -26,21 +26,21 @@ export default function Entradas() {
     const [open, setOpen] = useState(false);
     const [selectedEntradaId, setSelectedEntradaId] = useState(null);
 
-    //! Edit Entrada
+    // Edit Entrada
     const handleEdit = (entrada) => {
         console.log("Entrada a editar:", entrada)
 
         navigate(`/entradas/edit/${entrada.entradaId}`)
     }
 
-    //! View Entrada
+    // View Entrada
     const handleView = (entrada) => {
         console.log("Entradas a ver:", entrada)
 
         navigate(`/entradas/view/${entrada.entradaId}`)
     }
 
-    //! Delete Entrada
+    // Delete Entrada
     const handleDelete = async (entradaId) => {
         console.log(entradaId)
         if (selectedEntradaId) {
@@ -67,7 +67,7 @@ export default function Entradas() {
         }
     }
 
-    //! Fetch Entradas
+    // Fetch Entradas
     useEffect(() => {
         fetchEntradas();
     }, [fetchEntradas]);

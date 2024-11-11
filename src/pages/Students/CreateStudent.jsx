@@ -8,7 +8,7 @@ import Breadcrumbs from "../../components/Breadcrumbs ";
 
 import useStoreStudent from "../../store/useStoreStudents";
 
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import useToastStore from "../../store/toastStore";
 
@@ -18,7 +18,7 @@ const schema = yup.object().shape({
     apellido: yup.string().required("El apellido es obligatorio."),
     telefono: yup.string()
         .required("El teléfono es obligatorio."),
-    estadoProducto: yup.number()
+    estadoEstudiante: yup.number()
         .oneOf([0, 1], "El estado es obligatorio"),
 
 });
@@ -89,12 +89,12 @@ export default function CreateStudent() {
                         <label className="block text-gray-700 font-semibold">Estatus del Estudiante</label>
                         <select
                             className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                            {...register("estadoProducto")}
+                            {...register("estadoEstudiante")}
                         >
                             <option value={0}>Alta</option>
                             <option value={1}>Baja</option>
                         </select>
-                        {errors.estadoProducto && <p className="text-red-500">{errors.estadoProducto.message}</p>}
+                        {errors.estadoEstudiante && <p className="text-red-500">{errors.estadoEstudiante.message}</p>}
                     </div>
 
                     <div>
@@ -129,7 +129,7 @@ export default function CreateStudent() {
                             className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
                             placeholder="Ingresar correo electronico"
                             type="email"
-                            {...register("email")}
+                            {...register("correo")}
                         />
                         {errors.email && (
                             <p className="text-red-500">{errors.email.message}</p>

@@ -27,21 +27,21 @@ export default function Productos() {
     const [open, setOpen] = useState(false);
     const [selectedProductId, setSelectedProductId] = useState(null);
 
-    //! EditProduct
+    // EditProduct
     const handleEdit = (product) => {
         console.log("Productos a editar:", product)
 
         navigate(`/productos/edit/${product.productoId}`)
     }
 
-    //! ViewProduct
+    // ViewProduct
     const handleView = (product) => {
         console.log("Productos a ver:", product)
 
         navigate(`/productos/view/${product.productoId}`)
     }
 
-    //! DeleteProduct
+    // DeleteProduct
     const handleDelete = async (productId) => {
         if (selectedProductId) {
             toast.promise(
@@ -67,7 +67,7 @@ export default function Productos() {
         }
     }
 
-    //! FetchProducts
+    // FetchProducts
     useEffect(() => {
         fetchProducts();
     }, [fetchProducts]);

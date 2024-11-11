@@ -16,7 +16,11 @@ import useStoreStudent from "../../store/useStoreStudents";
 // Yup
 const schema = yup.object().shape({
     nombre: yup.string().required("El nombre es obligatorio."),
-    apellido: yup.string().required("El apellido es obligatorio.")
+    apellido: yup.string().required("El apellido es obligatorio."),
+    telefono: yup.string()
+        .required("El teléfono es obligatorio."),
+    estadoEstudiante: yup.number()
+        .oneOf([0, 1], "El estado es obligatorio"),
 });
 
 export default function EditStudent() {
@@ -63,7 +67,7 @@ export default function EditStudent() {
 
         try {
             await toast.promise(
-                updateCliente(nuevoCliente),  // Asegúrate que updateCliente retorne una promesa
+                updateStudent(nuevoEstudiante),  // Asegúrate que updateCliente retorne una promesa
                 {
                     loading: 'Editando Estudiante...',
                     success: 'Estudiante editado con éxito!',
@@ -102,6 +106,19 @@ export default function EditStudent() {
                     })}
                 >
                     <div>
+                        <label className="block text-gray-700 font-semibold">Estatus del Estudiante</label>
+                        <select
+                            className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                            {...register("estadoEstudiante")}
+                        >
+                            <option value={0}>Alta</option>
+                            <option value={1}>Baja</option>
+                        </select>
+                        {errors.estadoEstudiante && <p className="text-red-500">{errors.estadoEstudiante.message}</p>}
+                    </div>
+
+
+                    <div>
                         <label className="block text-gray-700 font-semibold">Nombre:</label>
                         <input
                             className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
@@ -132,8 +149,8 @@ export default function EditStudent() {
                         <input
                             className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
                             placeholder="Ingresar correo electronico"
-                            type="email"
-                            {...register("email")}
+                            type="correo"
+                            {...register("correo")}
                         />
                         {errors.email && (
                             <p className="text-red-500">{errors.email.message}</p>

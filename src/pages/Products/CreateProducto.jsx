@@ -77,17 +77,17 @@ export default function CreateProducto() {
         setPrecio(calculado);
     }, [costo, utilidad]);
 
-    //! UseEffectBrands
+    // UseEffectBrands
     useEffect(() => {
         fetchBrands();
     }, [fetchBrands]);
 
-    //! UseEffectsCategories
+    // UseEffectsCategories
     useEffect(() => {
         fetchCategories();
     }, [fetchCategories])
 
-    //! UseEffectProviders
+    // UseEffectProviders
     useEffect(() => {
         fetchProviders();
     }, [fetchProviders])

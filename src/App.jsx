@@ -30,6 +30,9 @@ import ViewVentas from "./pages/Ventas/ViewVentas"
 import Students from "./pages/Students/Students"
 import CreateStudent from "./pages/Students/CreateStudent"
 import EditStudent from "./pages/Students/EditStudent"
+import Colegiaturas from "./pages/Colegiaturas/Colegiaturas"
+import CreateColegiatura from "./pages/Colegiaturas/CreateColegiatura"
+import EditColegiatura from "./pages/Colegiaturas/EditColegiatura"
 
 export default function App() {
   return (
@@ -72,7 +75,11 @@ export default function App() {
           <Route path="/estudiantes" element={<Students />} />
           <Route path="/estudiantes/createestudiante" element={<CreateStudent />} />
           <Route path="/estudiantes/edit/:studentId" element={<EditStudent />} />
-          <Route path="/ventas/view/:ventaId" element={<ViewVentas />} />
+          <Route path="/estudiantes/view/:studentId" element={<ViewVentas />} />
+
+          <Route path="/colegiaturas" element={<Colegiaturas />} />
+          <Route path="/colegiaturas/createcolegiatura" element={<CreateColegiatura />} />
+          <Route path="/colegiaturas/edit/:colegiaturaId" element={<EditColegiatura />} />
         </Routes>
       </Layout >
       <Toaster

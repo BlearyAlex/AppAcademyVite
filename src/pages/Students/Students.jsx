@@ -34,7 +34,7 @@ export default function Students() {
     const handleEdit = (student) => {
         console.log("estudiantes a editar:", student)
 
-        navigate(`/categorias/edit/${student.estudianteId}`)
+        navigate(`/estudiantes/edit/${student.estudianteId}`)
     }
 
     // UseState
