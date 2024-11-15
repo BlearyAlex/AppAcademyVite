@@ -74,6 +74,17 @@ const useStoreStudent = create((set) => ({
         } catch (error) {
             set({ fetchError: error.message, loading: false });
         }
+    },
+
+    fetchStudentWithColegiaturas: async (studentId) => {
+        set({ loading: true, fetchError: null });
+        try {
+            const response = await axios.get(`http://localhost:8080/api/v1/Estudiante/GetEstudianteWithColegiatura/${studentId}`)
+            set({ student: response.data, loading: false });
+            console.log(response)
+        } catch (error) {
+            set({ fetchError: error.message, loading: false })
+        }
     }
 }))
 

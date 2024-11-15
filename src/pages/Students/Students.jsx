@@ -5,7 +5,8 @@ import Table from "../../components/Table"
 import {
     Pencil,
     Trash,
-    CirclePlus
+    CirclePlus,
+    Eye
 } from "lucide-react"
 
 import Breadcrumbs from "../../components/Breadcrumbs "
@@ -30,18 +31,18 @@ export default function Students() {
     console.log(students)
     const { showToast } = useToastStore();
 
-    // EditProvider
+
+    // UseState
+    const [open, setOpen] = useState(false);
+    const [selectedStudentId, setSelectedStudentId] = useState(null);
+
+    // Funcitons
     const handleEdit = (student) => {
         console.log("estudiantes a editar:", student)
 
         navigate(`/estudiantes/edit/${student.estudianteId}`)
     }
 
-    // UseState
-    const [open, setOpen] = useState(false);
-    const [selectedStudentId, setSelectedStudentId] = useState(null);
-
-    // DeleteStudent
     const handleDelete = async (studentId) => {
         if (selectedStudentId) {
             toast.promise(
@@ -63,6 +64,12 @@ export default function Students() {
             );
             setOpen(false);
         }
+    }
+
+    const handleView = (student) => {
+        console.log("Estudiantes a ver:", student)
+
+        navigate(`/estudiantes/view/${student.estudianteId}`)
     }
 
     // FetchsProviders
@@ -99,6 +106,7 @@ export default function Students() {
                     >
                         <Trash size={20} strokeWidth={2.25} />
                     </button>
+                    <button onClick={() => handleView(row.original)} className="px-2 py-1 text-emerald-500"><Eye size={20} strokeWidth={2.25} /></button>
                 </div>
             )
         }

@@ -12,19 +12,23 @@ const useStoreProduct = create((set) => ({
 
     // Crear producto
     createProducto: async (newProducto) => {
-        set({ loading: true, fetchError: null }); // Asegurarte de que loading esté en true mientras se hace la solicitud
+        set({ loading: true, fetchError: null });
         try {
-            const response = await axios.post('http://localhost:8080/api/v1/Producto/CreateProduct', newProducto);
+            const response = await axios.post('http://localhost:8080/api/v1/Producto/CreateProduct', newProducto, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                }
+            });
             set((state) => ({
                 productos: [...state.productos, response.data]
             }));
-            return response.data; // Devolver el producto creado
+            return response.data;
         } catch (error) {
             console.error("Error creando el producto:", error);
             set({ fetchError: error.message });
-            throw error; // Re-lanzar el error para manejarlo en el componente
+            throw error;
         } finally {
-            set({ loading: false }); // Asegurar que loading se ponga en false al final
+            set({ loading: false });
         }
     },
 

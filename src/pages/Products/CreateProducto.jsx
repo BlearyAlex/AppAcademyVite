@@ -65,36 +65,33 @@ export default function CreateProducto() {
 
     });
 
-
     // Calcular precio automaticamente
     const costo = watch("costo");
     const utilidad = watch("utilidad");
 
     const [precio, setPrecio] = useState(0);
 
+    // UseEffects
     useEffect(() => {
         const calculado = parseFloat(costo || 0) + parseFloat(utilidad || 0);
         setPrecio(calculado);
     }, [costo, utilidad]);
 
-    // UseEffectBrands
     useEffect(() => {
         fetchBrands();
     }, [fetchBrands]);
 
-    // UseEffectsCategories
     useEffect(() => {
         fetchCategories();
     }, [fetchCategories])
 
-    // UseEffectProviders
     useEffect(() => {
         fetchProviders();
     }, [fetchProviders])
 
-
-
+    // Functions
     const onSubmit = async (data) => {
+        const imageFile = document.querySelector("input[type='file']").files[0]; // Obtenemos el archivo de la imagen (si existe)
         console.log("Valores del formulario enviados:", data);
         const nuevoProducto = {
             ...data,
@@ -104,25 +101,31 @@ export default function CreateProducto() {
             marcaId: data.marcaId || null,
             categoriaId: data.categoriaId || null,
             proveedorId: data.proveedorId || null,
-
         };
 
-        // Usa toast.promise para manejar el proceso de creación
+        const formData = new FormData();
+
+        for (const key in nuevoProducto) {
+            formData.append(key, nuevoProducto[key]);
+        }
+
+        if (imageFile) {
+            formData.append("imageFile", imageFile);
+        }
+
         toast.promise(
             crearProducto(nuevoProducto),
             {
                 loading: 'Creando producto...',
                 success: () => {
                     fetchProducts()
-                    // Aquí usamos el store de Zustand para mostrar el toast
                     showToast('Producto creado con éxito!', 'success');
-                    navigate('/productos'); // Redirige a la lista de productos
-                    return 'Producto creado con éxito!'; // Mensaje de éxito
+                    navigate('/productos');
+                    return 'Producto creado con éxito!';
                 },
                 error: () => {
-                    // También usamos el store de Zustand aquí
                     showToast('No se pudo crear el producto.', 'error');
-                    return 'No se pudo crear el producto.'; // Mensaje de error
+                    return 'No se pudo crear el producto.';
                 },
             }
         );

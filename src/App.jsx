@@ -33,6 +33,7 @@ import EditStudent from "./pages/Students/EditStudent"
 import Colegiaturas from "./pages/Colegiaturas/Colegiaturas"
 import CreateColegiatura from "./pages/Colegiaturas/CreateColegiatura"
 import EditColegiatura from "./pages/Colegiaturas/EditColegiatura"
+import ViewStudent from "./pages/Students/ViewStudent"
 
 export default function App() {
   return (
@@ -75,7 +76,7 @@ export default function App() {
           <Route path="/estudiantes" element={<Students />} />
           <Route path="/estudiantes/createestudiante" element={<CreateStudent />} />
           <Route path="/estudiantes/edit/:studentId" element={<EditStudent />} />
-          <Route path="/estudiantes/view/:studentId" element={<ViewVentas />} />
+          <Route path="/estudiantes/view/:studentId" element={<ViewStudent />} />
 
           <Route path="/colegiaturas" element={<Colegiaturas />} />
           <Route path="/colegiaturas/createcolegiatura" element={<CreateColegiatura />} />

@@ -80,6 +80,18 @@ export default function Colegiaturas() {
     // Columns
     const columns = [
         {
+            header: "Nombre Estudiante",
+            accessorKey: "nombre",
+            cell: ({ row }) => {
+                // Acceder al nombre dentro del objeto estudiante
+                const nombreEstudiante = row.original.estudiante?.nombre;
+
+                return (
+                    <span className="font-semibold">{nombreEstudiante}</span>
+                );
+            }
+        },
+        {
             header: "Fecha de Pago",
             accessorKey: "fechaPago",
             cell: ({ getValue }) => {
