@@ -20,7 +20,6 @@ const schema = yup.object().shape({
         .required("El teléfono es obligatorio."),
     estadoEstudiante: yup.number()
         .oneOf([0, 1], "El estado es obligatorio"),
-
 });
 
 export default function CreateStudent() {
@@ -39,13 +38,27 @@ export default function CreateStudent() {
 
     // Functions
     const onSubmit = async (data) => {
+
+        const imageFile = document.querySelector("input[type='file']").files[0];
+
         console.log("Valores del formulario enviados:", data);
+
         const nuevoEstudiante = {
             ...data,
         };
 
+        const formData = new FormData();
+
+        for (const key in nuevoEstudiante) {
+            formData.append(key, nuevoEstudiante[key]);
+        }
+
+        if (imageFile) {
+            formData.append("imageFile", imageFile);
+        }
+
         toast.promise(
-            createStudent(nuevoEstudiante),
+            createStudent(formData),
             {
                 loading: 'Creando Estudiante...',
                 success: () => {
@@ -178,6 +191,15 @@ export default function CreateStudent() {
                         {errors.fechaNacimiento && (
                             <p className="text-red-500">{errors.fechaNacimiento.message}</p>
                         )}
+                    </div>
+
+                    <div className="mt-2">
+                        <label className="block text-gray-700 font-semibold mb-2">Imagen</label>
+                        <input
+                            type="file"
+                            className="block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-200 ease-in-out hover:shadow-lg"
+                        />
+                        <p className="text-gray-500 mt-1">Selecciona una imagen para cargar. Formatos permitidos: JPG, PNG, GIF.</p>
                     </div>
 
                     <div className="w-full mt-4 col-span-3">

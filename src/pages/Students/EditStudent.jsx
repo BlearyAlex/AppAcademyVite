@@ -93,9 +93,9 @@ export default function EditStudent() {
                 />
 
                 <div>
-                    <h2 className="font-bold text-3xl text-gray-500">Crear Estudiante</h2>
+                    <h2 className="font-bold text-3xl text-gray-500">Editar Estudiante</h2>
                     <p className="text-gray-600">
-                        Complete el formulario para agregar un nuevo estudiante.
+                        Complete el formulario para editar el estudiante.
                     </p>
                 </div>
 

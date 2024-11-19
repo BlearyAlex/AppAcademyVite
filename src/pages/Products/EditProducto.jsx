@@ -105,7 +105,6 @@ export default function EditProducto() {
 
     useEffect(() => {
         if (producto) {
-            // Seteamos los valores del formulario cuando el producto esté disponible
             reset(producto);
         }
     }, [producto, reset]);
@@ -116,6 +115,9 @@ export default function EditProducto() {
 
 
     const onSubmit = async (data) => {
+
+        const imageFile = document.querySelector("input[type='file']").files[0];
+
         const productoActualizado = {
             ...data,
             productId: productId,
@@ -125,23 +127,30 @@ export default function EditProducto() {
             marcaId: data.marcaId || null,
             categoriaId: data.categoriaId || null,
             proveedorId: data.proveedorId || null,
+        };
+
+        const formData = new FormData();
+        for (const key in productoActualizado) {
+            formData.append(key, productoActualizado[key]);
         }
-        // Usa toast.promise para manejar el proceso de creación
+
+        if (imageFile) {
+            formData.append("imageFile", imageFile);
+        }
+
         toast.promise(
-            updateProducto(productoActualizado),
+            updateProducto(formData),
             {
                 loading: 'Editando producto...',
                 success: () => {
 
-                    // Aquí usamos el store de Zustand para mostrar el toast
                     showToast('Producto editado con éxito!', 'success');
-                    navigate('/productos'); // Redirige a la lista de productos
-                    return 'Producto editado con éxito!'; // Mensaje de éxito
+                    navigate('/productos');
+                    return 'Producto editado con éxito!';
                 },
                 error: () => {
-                    // También usamos el store de Zustand aquí
                     showToast('No se pudo editar el producto.', 'error');
-                    return 'No se pudo editar el producto.'; // Mensaje de error
+                    return 'No se pudo editar el producto.';
                 },
             }
         );
@@ -274,7 +283,7 @@ export default function EditProducto() {
 
                     <div>
                         <div className="mt-2">
-                            <label className="block text-gray-700 font-semibold mb-2">Imagen (URL)</label>
+                            <label className="block text-gray-700 font-semibold mb-2">Imagen</label>
                             <input
                                 type="file"
                                 className="block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-200 ease-in-out hover:shadow-lg"

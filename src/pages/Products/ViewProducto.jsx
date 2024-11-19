@@ -101,7 +101,7 @@ export default function ViewProducto() {
                 <Breadcrumbs
                     items={[
                         { label: 'Productos', link: '/productos' },
-                        { label: 'Editar Producto', link: '' }
+                        { label: 'Ver Producto', link: '' }
                     ]}
                 />
                 <div>
@@ -183,7 +183,11 @@ export default function ViewProducto() {
                         </table>
                     </div>
                     <div>
-                        <h1>Image</h1>
+                        <img
+                            src={`http://localhost:8080${producto.imagen}`}
+                            alt="Producto"
+                            className="w-full h-auto object-cover rounded-lg"
+                        />
                     </div>
                 </div>
                 <div className="flex justify-center bg-white mt-6 rounded-lg shadow-md p-10">

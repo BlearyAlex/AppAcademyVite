@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -49,8 +49,7 @@ export default function ViewStudent() {
 
     // Formatear Fecha y Hora
     const fecha = formatearFecha(student?.fechaNacimiento)
-    const fechaHora = formatearFechaHora(student?.colegiaturas[0].fechaPago)
-
+    const fechaHora = formatearFechaHora(student?.colegiaturas.fechaPago)
 
     if (loading) return <p>Cargando...</p>;
 
@@ -151,7 +150,11 @@ export default function ViewStudent() {
                         </table>
                     </div>
                     <div>
-                        <h1>Image</h1>
+                        <img
+                            src={`http://localhost:8080${student.imageUrl}`}
+                            alt="Producto"
+                            className="w-full h-auto object-cover rounded-lg"
+                        />
                     </div>
                 </div>
 
@@ -167,97 +170,97 @@ export default function ViewStudent() {
                             </tr>
                         </thead>
                         <tbody>
+                            {student.colegiaturas && student.colegiaturas.length > 0 ? (
+                                student.colegiaturas.map((colegiatura) => {
+                                    const { mes, estadoColegiatura, montoTotal, saldoPendiente, fechaPago } = colegiatura;
 
-                            <tr>
-                                <td className="border px-4 py-2">
-                                    {(() => {
-                                        const estado = student.colegiaturas[0].mes; // Obtener el mes
-                                        let estadoClass = '';
+                                    // Lógica para manejar el mes y las clases dinámicamente
+                                    let mesClass = '';
+                                    switch (mes) {
+                                        case "Enero":
+                                            mesClass = "bg-emerald-100/60 text-emerald-500";
+                                            break;
+                                        case "Febrero":
+                                            mesClass = "bg-yellow-100/60 text-yellow-500";
+                                            break;
+                                        case "Marzo":
+                                            mesClass = "bg-red-100/60 text-red-500";
+                                            break;
+                                        case "Abril":
+                                            mesClass = "bg-pink-100/60 text-pink-500";
+                                            break;
+                                        case "Mayo":
+                                            mesClass = "bg-rose-100/60 text-rose-500";
+                                            break;
+                                        case "Junio":
+                                            mesClass = "bg-fuchsia-100/60 text-fuchsia-500";
+                                            break;
+                                        case "Julio":
+                                            mesClass = "bg-purple-100/60 text-purple-500";
+                                            break;
+                                        case "Agosto":
+                                            mesClass = "bg-violet-100/60 text-violet-500";
+                                            break;
+                                        case "Septiembre":
+                                            mesClass = "bg-indigo-100/60 text-indigo-500";
+                                            break;
+                                        case "Octubre":
+                                            mesClass = "bg-blue-100/60 text-blue-500";
+                                            break;
+                                        case "Noviembre":
+                                            mesClass = "bg-sky-100/60 text-sky-500";
+                                            break;
+                                        case "Diciembre":
+                                            mesClass = "bg-cyan-100/60 text-cyan-500";
+                                            break;
+                                        default:
+                                            mesClass = "bg-gray-100/60 text-gray-500"; // Color por defecto
+                                    }
 
-                                        // Lógica para asignar clases según el mes
-                                        switch (estado) {
-                                            case "Enero":
-                                                estadoClass = "bg-emerald-100/60 text-emerald-500";
-                                                break;
-                                            case "Febrero":
-                                                estadoClass = "bg-yellow-100/60 text-yellow-500";
-                                                break;
-                                            case "Marzo":
-                                                estadoClass = "bg-red-100/60 text-red-500";
-                                                break;
-                                            case "Abril":
-                                                estadoClass = "bg-pink-100/60 text-pink-500";
-                                                break;
-                                            case "Mayo":
-                                                estadoClass = "bg-rose-100/60 text-rose-500";
-                                                break;
-                                            case "Junio":
-                                                estadoClass = "bg-fuchsia-100/60 text-fuchsia-500";
-                                                break;
-                                            case "Julio":
-                                                estadoClass = "bg-purple-100/60 text-purple-500";
-                                                break;
-                                            case "Agosto":
-                                                estadoClass = "bg-violet-100/60 text-violet-500";
-                                                break;
-                                            case "Septiembre":
-                                                estadoClass = "bg-indigo-100/60 text-indigo-500";
-                                                break;
-                                            case "Octubre":
-                                                estadoClass = "bg-blue-100/60 text-blue-500";
-                                                break;
-                                            case "Noviembre":
-                                                estadoClass = "bg-sky-100/60 text-sky-500";
-                                                break;
-                                            case "Diciembre":
-                                                estadoClass = "bg-cyan-100/60 text-cyan-500";
-                                                break;
-                                            default:
-                                                estadoClass = "bg-gray-100/60 text-gray-500"; // Color por defecto
-                                        }
+                                    // Lógica para manejar el estado de la colegiatura
+                                    let estadoClass = '';
+                                    switch (estadoColegiatura) {
+                                        case "Pendiente":
+                                            estadoClass = "bg-orange-100/60 text-orange-500";
+                                            break;
+                                        case "Pagado":
+                                            estadoClass = "bg-emerald-100/60 text-emerald-500";
+                                            break;
+                                        case "Vencido":
+                                            estadoClass = "bg-red-100/60 text-red-500";
+                                            break;
+                                        default:
+                                            estadoClass = "bg-gray-100/60 text-gray-500"; // Color por defecto
+                                    }
 
-                                        // Aplicamos la clase y mostramos el mes
-                                        return (
-                                            <span className={`font-semibold px-2 py-0 rounded-lg items-center ${estadoClass}`}>
-                                                {estado}
-                                            </span>
-                                        );
-                                    })()}
-                                </td>
-                                <td className="border px-4 py-2">
-                                    {(() => {
-                                        const estadoColegiatura = student.colegiaturas[0].estadoColegiatura; // Obtener el estado de la colegiatura
-                                        let estadoClass = '';
+                                    // Formatear la fecha de pago
+                                    const fechaHora = new Date(fechaPago).toLocaleDateString();
 
-                                        // Lógica para asignar colores al estado de colegiatura
-                                        switch (estadoColegiatura) {
-                                            case "Pendiente":
-                                                estadoClass = "bg-orange-100/60 text-orange-500"; // Amarillo para pendiente
-                                                break;
-                                            case "Pagado":
-                                                estadoClass = "bg-emerald-100/60 text-emerald-500"; // Verde para pagado
-                                                break;
-                                            case "Vencido":
-                                                estadoClass = "bg-red-100/60 text-red-500"; // Rojo para vencido
-                                                break;
-                                            default:
-                                                estadoClass = "bg-gray-100/60 text-gray-500"; // Color por defecto
-                                        }
-
-                                        // Aplicamos la clase y mostramos el estado
-                                        return (
-                                            <span className={`font-semibold px-2 py-0 rounded-lg items-center ${estadoClass}`}>
-                                                {estadoColegiatura}
-                                            </span>
-                                        );
-                                    })()}
-                                </td>
-                                <td className="border px-4 py-2">{fechaHora}</td>
-                                <td className="border px-4 py-2">${student.colegiaturas[0].montoTotal.toFixed(2)}</td>
-                                <td className="border px-4 py-2 font-semibold">${student.colegiaturas[0].saldoPendiente.toFixed(2)}</td>
-                            </tr>
-
+                                    return (
+                                        <tr key={colegiatura.colegiaturaId}>
+                                            <td className="border px-4 py-2">
+                                                <span className={`font-semibold px-2 py-0 rounded-lg items-center ${mesClass}`}>
+                                                    {mes}
+                                                </span>
+                                            </td>
+                                            <td className="border px-4 py-2">
+                                                <span className={`font-semibold px-2 py-0 rounded-lg items-center ${estadoClass}`}>
+                                                    {estadoColegiatura}
+                                                </span>
+                                            </td>
+                                            <td className="border px-4 py-2">{fechaHora}</td>
+                                            <td className="border px-4 py-2">${montoTotal.toFixed(2)}</td>
+                                            <td className="border px-4 py-2 font-semibold">${saldoPendiente.toFixed(2)}</td>
+                                        </tr>
+                                    );
+                                })
+                            ) : (
+                                <tr>
+                                    <td colSpan="5" className="border px-4 py-2 text-center">No hay colegiaturas disponibles</td>
+                                </tr>
+                            )}
                         </tbody>
+
                     </table>
                 </div>
             </div>

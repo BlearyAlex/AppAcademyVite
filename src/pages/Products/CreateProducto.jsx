@@ -91,8 +91,11 @@ export default function CreateProducto() {
 
     // Functions
     const onSubmit = async (data) => {
+
         const imageFile = document.querySelector("input[type='file']").files[0]; // Obtenemos el archivo de la imagen (si existe)
+
         console.log("Valores del formulario enviados:", data);
+
         const nuevoProducto = {
             ...data,
             costo: parseFloat(data.costo),
@@ -114,7 +117,7 @@ export default function CreateProducto() {
         }
 
         toast.promise(
-            crearProducto(nuevoProducto),
+            crearProducto(formData),
             {
                 loading: 'Creando producto...',
                 success: () => {
@@ -257,7 +260,7 @@ export default function CreateProducto() {
 
                     <div>
                         <div className="mt-2">
-                            <label className="block text-gray-700 font-semibold mb-2">Imagen (URL)</label>
+                            <label className="block text-gray-700 font-semibold mb-2">Imagen</label>
                             <input
                                 type="file"
                                 className="block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-200 ease-in-out hover:shadow-lg"

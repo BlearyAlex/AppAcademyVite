@@ -74,7 +74,19 @@ export default function Productos() {
 
 
     const columns = [
-        { header: "Imagen", accessorKey: "imagen" },
+        {
+            header: "Imagen",
+            accessorKey: "imagen",
+            cell: ({ row }) => {
+                const imagenUrl = `http://localhost:8080${row.original.imagen}`
+                return (
+                    <img
+                        src={imagenUrl}
+                        alt="Producto"
+                        className="w-16 h-16 object-cover rounded" />
+                )
+            }
+        },
         { header: "Nombre", accessorKey: "nombre" },
         { header: "Descripción", accessorKey: "descripcion" },
         {

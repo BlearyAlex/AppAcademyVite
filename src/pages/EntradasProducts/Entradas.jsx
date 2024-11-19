@@ -73,7 +73,7 @@ export default function Entradas() {
     }, [fetchEntradas]);
 
     const columns = [
-        { header: "ID", accessorKey: "entradaId" },
+        { header: "Folio", accessorKey: "folio" },
         { header: "Total Productos", accessorKey: "totalProductosEntrada" },
         {
             header: "Fecha de Emision",

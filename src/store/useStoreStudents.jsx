@@ -10,7 +10,11 @@ const useStoreStudent = create((set) => ({
     createStudent: async (newStudent) => {
         set({ loading: true, fetchError: null })
         try {
-            const response = await axios.post('http://localhost:8080/api/v1/Estudiante/CreateEstudiante', newStudent)
+            const response = await axios.post('http://localhost:8080/api/v1/Estudiante/CreateEstudiante', newStudent, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                }
+            })
             set((state) => ({
                 students: [...state.students, response.data]
             }));
