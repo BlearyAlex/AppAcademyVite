@@ -14,6 +14,7 @@ import Breadcrumbs from "../../components/Breadcrumbs ";
 
 import useStoreVenta from '../../store/useStoreVentas';
 import useStoreProduct from "../../store/useStoreProducts";
+import useStoreCliente from "../../store/useStoreClientes";
 
 import { useNavigate } from "react-router-dom";
 import useToastStore from "../../store/toastStore";
@@ -34,8 +35,8 @@ export default function CreateVenta() {
     // Stores
     const crearVenta = useStoreVenta((state) => state.createVenta);
     const { fetchVentas, ventas } = useStoreVenta();
-    console.log(ventas)
-
+    const { clientes, fetchClientes } = useStoreCliente();
+    console.log(clientes)
     const { showToast } = useToastStore();
     const { productos, fetchProducts, loading, error } = useStoreProduct();
 
@@ -57,6 +58,11 @@ export default function CreateVenta() {
     useEffect(() => {
         fetchVentas()
     }, [fetchVentas])
+
+    useEffect(() => {
+        fetchClientes()
+    }, [fetchClientes])
+
 
     useEffect(() => {
         // Calcula el total de productos seleccionados cada vez que cambian
@@ -152,12 +158,21 @@ export default function CreateVenta() {
             header: "Imagen",
             accessorKey: "imagen",
             cell: ({ row }) => {
-                const imagenUrl = `http://localhost:8080${row.original.imagen}`
+                const imagenUrl = row.original.imagen
+                    ? `http://localhost:8080${row.original.imagen}`
+                    : '/imagen.png'; // Imagen predeterminada
+
                 return (
                     <img
                         src={imagenUrl}
                         alt="Producto"
-                        className="w-16 h-16 object-cover rounded" />
+                        className="w-16 h-16 object-cover rounded"
+                        onError={(e) => {
+                            // Fallback en caso de error cargando la imagen
+                            e.target.onerror = null;
+                            e.target.src = '/imagen.png';
+                        }}
+                    />
                 )
             }
         },
@@ -205,8 +220,24 @@ export default function CreateVenta() {
 
             <form onSubmit={handleSubmit(onSubmit)} className="mt-6 grid grid-cols-3 items-start gap-4">
 
-                <div className="col-span-3 bg-white rounded-lg shadow-lg p-6">
+                <div className="col-span-4 bg-white rounded-lg shadow-lg p-6">
                     <div className="flex gap-5">
+
+                        <div className="w-full">
+                            <label className="block text-gray-700 font-semibold">Cliente</label>
+                            <select
+                                className="block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                                {...register("clienteId")}
+                            >
+                                <option value=''>Seleccione un cliente</option>
+                                {clientes.map((cliente) => (
+                                    <option key={cliente.clienteId} value={cliente.clienteId}>
+                                        {cliente.nombreCompleto}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
                         <div className="w-full">
                             <label className="block text-gray-700 font-semibold">Estado de Venta</label>
                             <select

@@ -78,21 +78,32 @@ export default function Productos() {
             header: "Imagen",
             accessorKey: "imagen",
             cell: ({ row }) => {
-                const imagenUrl = `http://localhost:8080${row.original.imagen}`
+                const imagenUrl = row.original.imagen
+                    ? `http://localhost:8080${row.original.imagen}`
+                    : '/imagen.png'; // Imagen predeterminada
+
                 return (
                     <img
                         src={imagenUrl}
                         alt="Producto"
-                        className="w-16 h-16 object-cover rounded" />
+                        className="w-16 h-16 object-cover rounded"
+                        onError={(e) => {
+                            // Fallback en caso de error cargando la imagen
+                            e.target.onerror = null;
+                            e.target.src = '/imagen.png';
+                        }}
+                    />
                 )
             }
         },
         { header: "Nombre", accessorKey: "nombre" },
-        { header: "Descripción", accessorKey: "descripcion" },
         {
-            header: "Precio", accessorKey: "precio", cell: ({ row }) => {
+            header: "Precio",
+            accessorKey: "precio",
+            cell: ({ row }) => {
                 const precio = row.original.precio;
-                return <span>${precio.toFixed(2)}</span>; // Formatea el precio con 2 decimales
+                const formattedPrice = (precio && !isNaN(precio)) ? precio.toFixed(2) : 'N/A'; // Verifica si el precio es un número válido
+                return <span>${formattedPrice}</span>;
             }
         },
         { header: "Stock", accessorKey: "stockMinimo" },

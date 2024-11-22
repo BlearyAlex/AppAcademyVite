@@ -85,6 +85,17 @@ const useStoreProduct = create((set) => ({
             set({ loading: false })
         }
     },
+
+    fetchProductsMostSale: async () => {
+        set({ loading: true, fetchError: null });
+        try {
+            const response = await axios.get('http://localhost:8080/api/v1/Producto/GetProductsMostSale');
+            set({ productos: response.data, loading: false });
+        } catch (error) {
+            console.error("Error obteniendo los productos:", error);
+            set({ fetchError: error.message, loading: false });
+        }
+    },
 }));
 
 export default useStoreProduct;

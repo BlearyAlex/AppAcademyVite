@@ -74,6 +74,17 @@ const useStoreVenta = create((set) => ({
         } catch (error) {
             set({ fetchError: error.message, loading: false });
         }
+    },
+
+    fetchVentasForDate: async (periodo) => {
+        set({ loading: true, fetchError: null });
+        try {
+            const response = await axios.get(`http://localhost:8080/api/v1/Venta/GetVentasForDate?periodo=${periodo}`)
+            set({ venta: response.data, loading: false });
+            console.log(response)
+        } catch (error) {
+            set({ fetchError: error.message, loading: false })
+        }
     }
 }))
 

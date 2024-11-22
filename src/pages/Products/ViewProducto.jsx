@@ -182,11 +182,18 @@ export default function ViewProducto() {
                             </tbody>
                         </table>
                     </div>
-                    <div>
+                    <div className="w-full h-64 overflow-hidden rounded-lg flex items-center justify-center m-5">
                         <img
-                            src={`http://localhost:8080${producto.imagen}`}
+                            src={producto.imagen
+                                ? `http://localhost:8080${producto.imagen}`
+                                : '/imagen.png'} // Imagen predeterminada
                             alt="Producto"
-                            className="w-full h-auto object-cover rounded-lg"
+                            className="max-w-full max-h-full object-contain"
+                            onError={(e) => {
+                                // Fallback en caso de error cargando la imagen
+                                e.target.onerror = null;
+                                e.target.src = '/imagen.png';
+                            }}
                         />
                     </div>
                 </div>

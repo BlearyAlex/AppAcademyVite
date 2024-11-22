@@ -92,7 +92,6 @@ export default function Entradas() {
                 );
             },
         },
-        { header: "Folio", accessorKey: "folio" },
         {
             header: "Acciones",
             accessorKey: "acciones",
