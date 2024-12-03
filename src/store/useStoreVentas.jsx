@@ -4,6 +4,9 @@ import axios from "axios";
 const useStoreVenta = create((set) => ({
     ventas: [],
     venta: null,
+    ventaForDate: null,
+    ventaForMonth: null,
+    ventaForDay: null,
     loading: false,
     fetchError: null,
 
@@ -80,12 +83,34 @@ const useStoreVenta = create((set) => ({
         set({ loading: true, fetchError: null });
         try {
             const response = await axios.get(`http://localhost:8080/api/v1/Venta/GetVentasForDate?periodo=${periodo}`)
-            set({ venta: response.data, loading: false });
+            set({ ventaForDate: response.data, loading: false });
             console.log(response)
         } catch (error) {
             set({ fetchError: error.message, loading: false })
         }
-    }
+    },
+
+    fetchVentasForMonth: async () => {
+        set({ loading: true, fetchError: null });
+        try {
+            const response = await axios.get('http://localhost:8080/api/v1/Venta/GetVentasForMonth');
+            set({ ventaForMonth: response.data, loading: false });
+        } catch (error) {
+            console.error("Error obteniendo las ventas:", error);
+            set({ fetchError: error.message, loading: false });
+        }
+    },
+
+    fetchVentasForDay: async () => {
+        set({ loading: true, fetchError: null });
+        try {
+            const response = await axios.get('http://localhost:8080/api/v1/Venta/GetVentasForDay');
+            set({ ventaForDay: response.data, loading: false });
+        } catch (error) {
+            console.error("Error obteniendo las ventas:", error);
+            set({ fetchError: error.message, loading: false });
+        }
+    },
 }))
 
 export default useStoreVenta;

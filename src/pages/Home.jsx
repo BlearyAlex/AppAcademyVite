@@ -1,8 +1,12 @@
 import { useState, useEffect } from "react";
 import { Doughnut, Bar } from "react-chartjs-2";
 import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale, BarElement } from "chart.js";
+
 import useStoreProduct from "../store/useStoreProducts";
 import useStoreVenta from "../store/useStoreVentas";
+import useStoreEntrada from "../store/useStoreEntradas";
+
+import { ShoppingBag, ShoppingCartIcon, DollarSign } from "lucide-react";
 
 // Registra los componentes necesarios de Chart.js
 ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale, BarElement);
@@ -32,7 +36,8 @@ const periodoTexto = {
 
 export default function Home() {
     const { fetchProductsMostSale, productos } = useStoreProduct();
-    const { fetchVentasForDate, venta, loading } = useStoreVenta();
+    const { fetchVentasForDate, fetchVentasForMonth, fetchVentasForDay, ventaForDate, ventaForMonth, ventaForDay, loading } = useStoreVenta();
+    const { fetchEntradaForMonth, entrada = {} } = useStoreEntrada();
 
     const [periodo, setPeriodo] = useState('dia');
     const [chartData, setChartData] = useState({
@@ -69,7 +74,6 @@ export default function Home() {
     });
 
     useEffect(() => {
-        // Llamada a la API para obtener los productos más vendidos
         const fetchData = async () => {
             await fetchProductsMostSale();
         };
@@ -95,33 +99,38 @@ export default function Home() {
     }, [productos]);
 
     useEffect(() => {
-        // Llamada a la API para obtener ventas según el período
         fetchVentasForDate(periodo);
     }, [fetchVentasForDate, periodo]);
 
     useEffect(() => {
-        if (venta && venta.length > 0) {
+        fetchEntradaForMonth();
+    }, [fetchEntradaForMonth])
+
+    useEffect(() => {
+        fetchVentasForDay();
+    }, [fetchVentasForDay])
+
+    useEffect(() => {
+        fetchVentasForMonth()
+    }, [fetchVentasForMonth])
+
+
+    useEffect(() => {
+        if (ventaForDate && ventaForDate.length > 0) {
             setBarChartData({
-                labels: venta.map((v) => v.fecha),
+                labels: ventaForDate.map((v) => v.fecha),
                 datasets: [
                     {
                         label: 'Ventas Totales',
-                        data: venta.map((v) => v.totalVentas),
+                        data: ventaForDate.map((v) => v.totalVentas),
                         backgroundColor: 'rgba(75, 192, 192, 0.6)',
                         borderColor: 'rgba(75, 192, 192, 1)',
-                        borderWidth: 1,
-                    },
-                    {
-                        label: 'Productos Vendidos',
-                        data: venta.map((v) => v.totalProductos),
-                        backgroundColor: 'rgba(153, 102, 255, 0.6)',
-                        borderColor: 'rgba(153, 102, 255, 1)',
                         borderWidth: 1,
                     },
                 ],
             });
         }
-    }, [venta]);
+    }, [ventaForDate]);
 
     const barChartOptions = {
         scales: {
@@ -148,6 +157,13 @@ export default function Home() {
         responsive: true,
     };
 
+    function formatCurrency(amount) {
+        return `$${amount.toLocaleString('en-US', {
+            minimumFractionDigits: 2, // Mínimo de 2 decimales
+            maximumFractionDigits: 2, // Máximo de 2 decimales
+        })}`;
+    }
+
     if (loading) {
         return <div className="text-center py-10">Cargando datos...</div>;
     }
@@ -155,9 +171,9 @@ export default function Home() {
     return (
         <div>
             <div className="grid grid-cols-3 h-full p-10 gap-5">
-                <MetricCard icon="shopping-cart" color="bg-cyan-400" value="$254.18K" label="Ventas" />
-                <MetricCard icon="dollar-sign" color="bg-red-400" value="$254" label="Ventas totales hoy" />
-                <MetricCard icon="shopping-bag" color="bg-green-400" value="$254" label="Compras" />
+                <MetricCard Icon={ShoppingCartIcon} color="bg-cyan-400" value={ventaForMonth?.totalVentas ? formatCurrency(ventaForMonth.totalVentas) : "$0.00"} label="Ventas de Cada Mes" />
+                <MetricCard Icon={DollarSign} color="bg-red-400" value={ventaForDay?.totalVenta ? formatCurrency(ventaForDay.totalVenta) : "$0.00"} label="Ventas totales hoy" />
+                <MetricCard Icon={ShoppingBag} color="bg-green-400" value={entrada?.totalCompras ? formatCurrency(entrada.totalCompras) : "$0.00"} label="Compras de Cada Mes" />
             </div>
 
             <div className="p-5 grid grid-cols-3">
@@ -182,28 +198,15 @@ export default function Home() {
     );
 }
 
-function MetricCard({ icon, color, value, label }) {
+function MetricCard({ Icon, color, value, label }) {
     return (
         <div className={`${color} flex rounded-lg p-10 justify-between`}>
             <div>
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="64"
-                    height="64"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="#ffffff"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className={`lucide lucide-${icon}`}
-                >
-                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
-                </svg>
+                <Icon size={64} color="white" />
             </div>
             <div className="text-white text-end">
-                <h2 className="font-semibold text-2xl">{value}</h2>
-                <h3>{label}</h3>
+                <h2 className="font-semibold text-3xl">{value}</h2>
+                <h3 className="font-semibold">{label}</h3>
             </div>
         </div>
     );
@@ -214,7 +217,7 @@ function PeriodButton({ label, isActive, onClick }) {
         <button
             onClick={onClick}
             type="button"
-            className={`px-4 py-2 rounded ${isActive ? 'bg-blue-700 text-white' : 'bg-blue-500 text-white hover:bg-blue-600'
+            className={`px-4 py-2 rounded ${isActive ? 'bg-fuchsia-400 text-white' : 'bg-fuchsia-200 text-white hover:bg-fuchsia-300'
                 }`}
             aria-label={`Cambiar período a ${label}`}
         >

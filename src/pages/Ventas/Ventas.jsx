@@ -125,9 +125,9 @@ export default function Ventas() {
                 const [fecha, horaConAmPm] = fechaHora.split(', '); // Asegúrate de que esto coincida con el formato
 
                 return (
-                    <div className="px-2 py-0 rounded-lg bg-indigo-100/60 text-center font-semibold flex flex-col">
-                        <span className="text-indigo-500 text uppercase">{horaConAmPm}</span>
-                        <span className="text-indigo-500">{fecha}</span>
+                    <div className="px-2 py-0 rounded-lg bg-fuchsia-100/60 text-center font-semibold flex flex-col">
+                        <span className="text-fuchsia-500 text uppercase">{horaConAmPm}</span>
+                        <span className="text-fuchsia-500">{fecha}</span>
                     </div>
                 );
             },

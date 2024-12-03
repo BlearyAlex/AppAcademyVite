@@ -6,13 +6,13 @@ import * as yup from "yup";
 
 import toast from 'react-hot-toast';
 
-import { Trash, CirclePlus, PackagePlus } from 'lucide-react';
+import { Trash, PackagePlus } from 'lucide-react';
 import Breadcrumbs from "../../components/Breadcrumbs ";
 import { useNavigate } from "react-router-dom";
-import Table from '../../components/Table';
 import useStoreProduct from "../../store/useStoreProducts";
 import useStoreEntrada from "../../store/useStoreEntradas";
 import useToastStore from "../../store/toastStore";
+import TableProducts from "../../components/TableProducts";
 
 // Define el esquema de validación con Yup
 const schema = yup.object().shape({
@@ -153,7 +153,7 @@ export default function CreateEntrada() {
         {
             header: "Precio", accessorKey: "costo", cell: ({ row }) => {
                 const precio = row.original.costo;
-                return <span>${precio.toFixed(2)}</span>;
+                return <span>${precio ? precio.toFixed(2) : "0.00"}</span>;
             }
         },
         {
@@ -172,7 +172,7 @@ export default function CreateEntrada() {
                 <div className="flex items-center space-x-2">
                     <button
                         onClick={() => agregarProducto(row.original)}
-                        className="px-2 py-1 text-indigo-500"
+                        className="px-2 py-1 text-fuchsia-500"
                     >
                         <PackagePlus size={20} strokeWidth={2.25} />
                     </button>
@@ -197,21 +197,12 @@ export default function CreateEntrada() {
                 {/* ProductosEntrada */}
                 <div className="col-span-2">
                     <div className="bg-white rounded-lg shadow-lg p-6 flex flex-col">
-                        <Table
+                        <TableProducts
                             data={productos}
                             columns={columns}
                             fetchProducts={fetchProducts}
                             loading={loading}
                             error={error}
-                            actionButton={{
-                                label: "Crear Producto",
-                                icon: <CirclePlus size={20} strokeWidth={2.25} />,
-                                link: "/productos/createproducto",
-                            }}
-                            titles={{
-                                title: "Productos",
-                                subtitle: "Lista de todos los productos."
-                            }}
                         />
                     </div>
 
@@ -284,7 +275,7 @@ export default function CreateEntrada() {
                         <input
                             type="text"
                             {...register("numeroFactura")}
-                            className="block w-2/3 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                            className="block w-2/3 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-fuchsia-400"
                             placeholder="Ej. FAC-7890100.00"
                         />
                         {errors.numeroFactura && <p className="text-red-500">{errors.numeroFactura.message}</p>}
@@ -295,7 +286,7 @@ export default function CreateEntrada() {
                         <input
                             type="text"
                             {...register("folio")}
-                            className="block w-2/3 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                            className="block w-2/3 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-fuchsia-400"
                             placeholder="Ej. 123456"
                         />
                         {errors.folio && <p className="text-red-500">{errors.folio.message}</p>}
@@ -316,7 +307,7 @@ export default function CreateEntrada() {
                         {errors.bruto && <p className="text-red-500">{errors.bruto.message}</p>}
                     </div>
 
-                    <button type="submit" className="mt-4 bg-blue-500 text-white py-2 px-4 rounded">Crear Entrada</button>
+                    <button type="submit" className="mt-4 bg-green-400 text-white py-2 px-4 rounded hover:bg-green-300 font-semibold">Crear Entrada</button>
                 </div>
             </form>
         </div>

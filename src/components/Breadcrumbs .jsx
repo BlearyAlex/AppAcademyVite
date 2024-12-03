@@ -15,7 +15,7 @@ const Breadcrumbs = ({ items }) => {
                     </li>
                     {items.map((item, index) => (
                         <li key={index} className="flex items-center">
-                            <a href={item.link} className={`hover:underline ${index === items.length - 1 ? 'text-indigo-400 font-semibold' : 'text-gray-600'}`}>
+                            <a href={item.link} className={`hover:underline ${index === items.length - 1 ? 'text-fuchsia-400 font-semibold' : 'text-gray-600'}`}>
                                 {item.label}
                             </a>
                             {index < items.length - 1 && <span className="mx-5 text-gray-600">/</span>}

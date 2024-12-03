@@ -3,7 +3,7 @@
 import SideBar from "../components/SideBar";
 import { SidebarItem } from "../components/SideBar";
 
-import { Boxes, LayoutDashboard, LayoutGrid, Package, ShoppingCart, Bookmark, ArchiveRestore, ContactRound, Receipt, School, Banknote } from "lucide-react";
+import { LayoutDashboard, LayoutGrid, Package, ShoppingCart, Bookmark, ArchiveRestore, ContactRound, Receipt, School, Banknote } from "lucide-react";
 
 import { Link, useLocation } from "react-router-dom";
 
@@ -14,7 +14,7 @@ export default function Layout({ children }) {
         <div className="flex">
             <SideBar>
                 <Link to="/">
-                    <SidebarItem icon={<LayoutDashboard size={20} />} text="DashBoard" active={location.pathname === '/'} />
+                    <SidebarItem icon={<LayoutDashboard size={20} />} text="DashBoard" active={location.pathname === '/'} alert />
                 </Link>
 
                 <Link to="/productos">
@@ -46,8 +46,6 @@ export default function Layout({ children }) {
                 <Link to="/ventas">
                     <SidebarItem icon={<Receipt size={20} />} text="Ventas" active={location.pathname === '/ventas'} />
                 </Link>
-
-                <SidebarItem icon={<Boxes size={20} />} text="Inventario" alert />
 
                 <hr className="my-3" />
 

@@ -78,7 +78,18 @@ const useStoreEntrada = create((set) => ({
         } finally {
             set({ loading: false })
         }
-    }
+    },
+
+    fetchEntradaForMonth: async () => {
+        set({ loading: true, fetchError: null });
+        try {
+            const response = await axios.get('http://localhost:8080/api/v1/Entrada/GetEntradaForMont');
+            set({ entrada: response.data, loading: false });
+        } catch (error) {
+            console.error("Error obteniendo las entradas:", error.message);
+            set({ fetchError: error.message, loading: false });
+        }
+    },
 }))
 
 export default useStoreEntrada;

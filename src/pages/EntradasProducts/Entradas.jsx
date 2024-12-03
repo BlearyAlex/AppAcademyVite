@@ -85,9 +85,9 @@ export default function Entradas() {
                 const [fecha, horaConAmPm] = fechaHora.split(', '); // Asegúrate de que esto coincida con el formato
 
                 return (
-                    <div className="px-2 py-0 rounded-lg bg-indigo-100/60 text-center font-semibold flex flex-col">
-                        <span className="text-indigo-500 text uppercase">{horaConAmPm}</span>
-                        <span className="text-indigo-500">{fecha}</span>
+                    <div className="px-2 py-0 rounded-lg bg-fuchsia-100/60 text-center font-semibold flex flex-col">
+                        <span className="text-fuchsia-500 text uppercase">{horaConAmPm}</span>
+                        <span className="text-fuchsia-500">{fecha}</span>
                     </div>
                 );
             },
@@ -129,7 +129,7 @@ export default function Entradas() {
                 loading={loading}
                 error={fetchError}
                 actionButton={{
-                    label: "Crear Entradas",
+                    label: "Crear Entrada",
                     icon: <CirclePlus size={20} strokeWidth={2.25} />,
                     link: "/entradas/createentrada",
                 }}

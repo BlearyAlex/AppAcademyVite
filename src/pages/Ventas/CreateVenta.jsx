@@ -6,9 +6,7 @@ import * as yup from "yup";
 
 import toast from 'react-hot-toast';
 
-import Table from '../../components/Table';
-
-import { PackagePlus, CirclePlus, Trash } from 'lucide-react'
+import { PackagePlus, Trash } from 'lucide-react'
 
 import Breadcrumbs from "../../components/Breadcrumbs ";
 
@@ -18,6 +16,7 @@ import useStoreCliente from "../../store/useStoreClientes";
 
 import { useNavigate } from "react-router-dom";
 import useToastStore from "../../store/toastStore";
+import TableProducts from "../../components/TableProducts";
 
 // yup
 const schema = yup.object().shape({
@@ -36,7 +35,6 @@ export default function CreateVenta() {
     const crearVenta = useStoreVenta((state) => state.createVenta);
     const { fetchVentas, ventas } = useStoreVenta();
     const { clientes, fetchClientes } = useStoreCliente();
-    console.log(clientes)
     const { showToast } = useToastStore();
     const { productos, fetchProducts, loading, error } = useStoreProduct();
 
@@ -180,7 +178,7 @@ export default function CreateVenta() {
         {
             header: "Precio", accessorKey: "costo", cell: ({ row }) => {
                 const precio = row.original.costo;
-                return <span>${precio.toFixed(2)}</span>;
+                return <span>${precio ? precio.toFixed(2) : "0.00"}</span>;
             }
         },
         {
@@ -199,7 +197,7 @@ export default function CreateVenta() {
                 <div className="flex items-center space-x-2">
                     <button
                         onClick={() => agregarProducto(row.original)}
-                        className="px-2 py-1 text-indigo-500"
+                        className="px-2 py-1 text-fuchsia-500"
                     >
                         <PackagePlus size={20} strokeWidth={2.25} />
                     </button>
@@ -279,21 +277,12 @@ export default function CreateVenta() {
                 {/* ProductosEntrada */}
                 <div className="col-span-2">
                     <div className="bg-white rounded-lg shadow-lg p-6 flex flex-col">
-                        <Table
+                        <TableProducts
                             data={productos}
                             columns={columns}
                             fetchProducts={fetchProducts}
                             loading={loading}
                             error={error}
-                            actionButton={{
-                                label: "Crear Producto",
-                                icon: <CirclePlus size={20} strokeWidth={2.25} />,
-                                link: "/productos/createproducto",
-                            }}
-                            titles={{
-                                title: "Productos",
-                                subtitle: "Lista de todos los productos."
-                            }}
                         />
                     </div>
 
@@ -389,7 +378,7 @@ export default function CreateVenta() {
                         </div>
                     </div>
 
-                    <button type="submit" className="mt-4 bg-blue-500 text-white py-2 px-4 rounded">Crear Ventaxds</button>
+                    <button type="submit" className="mt-4 bg-green-400 text-white py-2 px-4 rounded hover:bg-green-300 font-semibold">Crear Venta</button>
                 </div>
             </form>
         </div>
